@@ -78,8 +78,14 @@ void Error_Handler(void);
 #define SpindlePWM_Pin	     GPIO_PIN_7
 
 /* USER CODE BEGIN Private defines */
-
+#define SpindlePWM_GPIO_Port GPIOA
+#define SpindlePWM_Pin	     GPIO_PIN_7
 /* USER CODE END Private defines */
+
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim9;
+extern UART_HandleTypeDef huart2;
+extern TIM_OC_InitTypeDef sConfigOC;
 
 #ifdef __cplusplus
 }

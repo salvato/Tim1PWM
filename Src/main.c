@@ -2,45 +2,50 @@
 
 #define USE_FULL_ASSERT
 
-static UART_HandleTypeDef huart2;
 
-void SystemClock_Config(void);
-void MX_GPIO_Init(void);
-void MX_TIM1_Init(TIM_HandleTypeDef *htim1, TIM_OC_InitTypeDef *sConfigOC);
-void MX_USART2_UART_Init(void);
+static void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM1_Init(void);
+static void MX_TIM9_Init(void);
+static void MX_USART2_UART_Init(void);
+
+
+TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim9;
+UART_HandleTypeDef huart2;
+TIM_OC_InitTypeDef sConfigOC;
 
 
 int
 main(void) {
     HAL_Init();
     SystemClock_Config();
+
     MX_GPIO_Init();
+    MX_TIM1_Init();
+    MX_TIM9_Init();
     MX_USART2_UART_Init();
 
-    TIM_HandleTypeDef htim1 = {0};
-    TIM_OC_InitTypeDef sConfigOC = {0};
-    MX_TIM1_Init(&htim1, &sConfigOC);
-
-    unsigned int light = sConfigOC.Pulse;
+    int light = (int)sConfigOC.Pulse;
     int iDir = 1;
 
     // You MUST call HAL_TIM_PWM_Start() after every call to HAL_TIM_PWM_ConfigChannel()
     HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim9);
+
     while(1) {
-        if(light >= htim1.Init.Period) {
+        if(light >= (int)htim1.Init.Period) {
             iDir = -1;
-            HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
         }
         else if(light < 1) {
             iDir = 1;
-            HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
         }
         light += iDir;
-        sConfigOC.Pulse = light;
-        HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);
+        sConfigOC.Pulse = (unsigned int)light;
+        HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);// Is this needed ??
         HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1);
         HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
-        HAL_Delay(15);
+        HAL_Delay(30);
     }
 }
 
@@ -89,47 +94,47 @@ SystemClock_Config(void) {
 }
 
 
-void
-MX_TIM1_Init(TIM_HandleTypeDef *htim1, TIM_OC_InitTypeDef *sConfigOC) {
+static void
+MX_TIM1_Init() {
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_ClockConfigTypeDef         sClockSourceConfig   = {0};
+    TIM_MasterConfigTypeDef        sMasterConfig        = {0};
     TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
-    htim1->Instance               = TIM1;
-    htim1->Init.Prescaler         = 48;
-    htim1->Init.CounterMode       = TIM_COUNTERMODE_UP;
-    htim1->Init.Period            = 99;
-    htim1->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-    htim1->Init.RepetitionCounter = 0;
-    htim1->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    if (HAL_TIM_Base_Init(htim1) != HAL_OK) {
+    htim1.Instance               = TIM1;
+    htim1.Init.Prescaler         = 48;
+    htim1.Init.CounterMode       = TIM_COUNTERMODE_UP;
+    htim1.Init.Period            = 99;
+    htim1.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+    htim1.Init.RepetitionCounter = 0;
+    htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+    if (HAL_TIM_Base_Init(&htim1) != HAL_OK) {
         Error_Handler();
     }
 
     sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    if (HAL_TIM_ConfigClockSource(htim1, &sClockSourceConfig) != HAL_OK) {
+    if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK) {
         Error_Handler();
     }
 
-    if (HAL_TIM_PWM_Init(htim1) != HAL_OK) {
+    if (HAL_TIM_PWM_Init(&htim1) != HAL_OK) {
         Error_Handler();
     }
 
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(htim1, &sMasterConfig) != HAL_OK) {
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK) {
         Error_Handler();
     }
 
-    sConfigOC->OCMode       = TIM_OCMODE_PWM1;
-    sConfigOC->Pulse        = 50;
-    sConfigOC->OCPolarity   = TIM_OCPOLARITY_HIGH;
-    sConfigOC->OCFastMode   = TIM_OCFAST_DISABLE;
-    sConfigOC->OCNPolarity  = TIM_OCNPOLARITY_HIGH;
-    sConfigOC->OCIdleState  = TIM_OCIDLESTATE_RESET;
-    sConfigOC->OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    if (HAL_TIM_PWM_ConfigChannel(htim1, sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+    sConfigOC.OCMode       = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse        = 0;
+    sConfigOC.OCPolarity   = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode   = TIM_OCFAST_DISABLE;
+    sConfigOC.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
+    sConfigOC.OCIdleState  = TIM_OCIDLESTATE_RESET;
+    sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+    if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
         Error_Handler();
     }
 
@@ -140,11 +145,44 @@ MX_TIM1_Init(TIM_HandleTypeDef *htim1, TIM_OC_InitTypeDef *sConfigOC) {
     sBreakDeadTimeConfig.BreakState       = TIM_BREAK_DISABLE;
     sBreakDeadTimeConfig.BreakPolarity    = TIM_BREAKPOLARITY_HIGH;
     sBreakDeadTimeConfig.AutomaticOutput  = TIM_AUTOMATICOUTPUT_DISABLE;
-    if (HAL_TIMEx_ConfigBreakDeadTime(htim1, &sBreakDeadTimeConfig) != HAL_OK) {
+    if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK) {
         Error_Handler();
     }
 
-    HAL_TIM_MspPostInit(htim1);// TIM1 GPIO Configuration:PA7 -> TIM1_CH1N
+    HAL_TIM_MspPostInit(&htim1);// TIM1 GPIO Configuration:PA7 -> TIM1_CH1N
+}
+
+
+static void
+MX_TIM9_Init(void) {
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_OC_InitTypeDef     sConfigOC          = {0};
+
+    htim9.Instance               = TIM9;
+    htim9.Init.Period            = 500;//0xFFFF;
+    htim9.Init.Prescaler         = 40000;//4-1;
+    htim9.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+    htim9.Init.CounterMode       = TIM_COUNTERMODE_UP;
+    htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    if(HAL_TIM_Base_Init(&htim9) != HAL_OK) {// Call also HAL_TIM_Base_MspInit()
+        Error_Handler();
+    }
+
+    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+    if(HAL_TIM_ConfigClockSource(&htim9, &sClockSourceConfig) != HAL_OK) {
+        Error_Handler();
+    }
+    if(HAL_TIM_OC_Init(&htim9) != HAL_OK) {
+        Error_Handler();
+    }
+
+    sConfigOC.OCMode     = TIM_OCMODE_ACTIVE;
+    sConfigOC.Pulse      = 0;
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+    if(HAL_TIM_OC_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+        Error_Handler();
+    }
 }
 
 
