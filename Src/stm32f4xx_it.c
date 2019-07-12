@@ -57,6 +57,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim9;
+extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN EV */
 
@@ -220,6 +221,21 @@ TIM1_BRK_TIM9_IRQHandler(void) {
         __HAL_TIM_CLEAR_IT(&htim9, TIM_IT_UPDATE);
     }
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+}
+
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void
+USART2_IRQHandler(void) {
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

@@ -95,6 +95,9 @@ HAL_UART_MspInit(UART_HandleTypeDef* huart) {// Called by HAL_UART_Init()
     else {
         Error_Handler();
     }
+// USART2 interrupt Init
+    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 
@@ -114,4 +117,6 @@ HAL_UART_MspDeInit(UART_HandleTypeDef* huart) {
 //  PA3     ------> USART2_RX
         HAL_GPIO_DeInit(GPIOA, USART_TX_Pin|USART_RX_Pin);
     }
+// USART2 interrupt DeInit
+    HAL_NVIC_DisableIRQ(USART2_IRQn);
 }
