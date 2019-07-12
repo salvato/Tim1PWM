@@ -38,6 +38,8 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Src/tim.c \
+Src/usart.c \
+Src/fifo_usart.c \
 Src/Print.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \

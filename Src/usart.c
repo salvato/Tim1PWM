@@ -19,9 +19,10 @@
 #include "usart.h"
 #include "main.h"
 #include "fifo_usart.h"
+#include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_rcc.h"
-#include "misc.h"
+//#include "misc.h"
 
 
 static uint8_t FifoInit = 0;
@@ -63,16 +64,16 @@ Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
 
 
 void
-Usart_Put(USART_TypeDef *usart, bool buffered, char c) {
+Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c) {
     uint8_t num = 0;
 
-    if(usart == USART1) {
+    if(usart->Instance == USART1) {
         num = USART1_NUM;
     }
-    else if(usart == USART2) {
+    else if(usart->Instance == USART2) {
         num = USART2_NUM;
     }
-    else if(usart == USART6) {
+    else if(usart->Instance == USART6) {
         num = USART6_NUM;
     }
 
@@ -82,7 +83,7 @@ Usart_Put(USART_TypeDef *usart, bool buffered, char c) {
         Usart_TxInt(usart, true);
     }
     else {
-        while(USART_GetFlagStatus(usart, USART_FLAG_TC) == RESET) {
+        while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET) {
         }
 		USART_SendData(usart, c);
     }
@@ -90,17 +91,17 @@ Usart_Put(USART_TypeDef *usart, bool buffered, char c) {
 
 
 void
-Usart_Write(USART_TypeDef *usart, bool buffered, char *data, uint8_t len) {
+Usart_Write(UART_HandleTypeDef *usart, bool buffered, unsigned char *data, uint8_t len) {
 	uint8_t i = 0;
 	uint8_t num = 0;
 
-    if(usart == USART1) {
+    if(usart->Instance == USART1) {
         num = USART1_NUM;
     }
-    else if(usart == USART2) {
+    else if(usart->Instance == USART2) {
         num = USART2_NUM;
     }
-    else if(usart == USART6) {
+    else if(usart->Instance == USART6) {
         num = USART6_NUM;
     }
 
@@ -114,31 +115,31 @@ Usart_Write(USART_TypeDef *usart, bool buffered, char *data, uint8_t len) {
     }
     else {
         while(len--) {
-            while(USART_GetFlagStatus(usart, USART_FLAG_TC) == RESET);
-            USART_SendData(usart, data[i++]);
+            while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET);
+            HAL_UART_Transmit(usart, &data[i++], 1, 0);
         }
     }
 }
 
 
 void
-Usart_TxInt(USART_TypeDef *usart, bool enable) {
+Usart_TxInt(UART_HandleTypeDef *usart, bool enable) {
     if(enable) {
-		USART_ITConfig(usart, USART_IT_TXE, ENABLE);
+        __HAL_UART_ENABLE_IT(usart, UART_IT_TXE);
 	}
     else {
-		USART_ITConfig(usart, USART_IT_TXE, DISABLE);
+        __HAL_UART_ENABLE_IT(usart, UART_IT_TXE);
 	}
 }
 
 
 void
-Usart_RxInt(USART_TypeDef *usart, bool enable) {
+Usart_RxInt(UART_HandleTypeDef *usart, bool enable) {
     if(enable) {
-		USART_ITConfig(usart, USART_IT_RXNE, ENABLE);
-	}
+        __HAL_UART_ENABLE_IT(usart, UART_IT_RXNE);
+    }
     else {
-		USART_ITConfig(usart, USART_IT_RXNE, DISABLE);
-	}
+        __HAL_UART_DISABLE_IT(usart, UART_IT_RXNE);
+    }
 }
 

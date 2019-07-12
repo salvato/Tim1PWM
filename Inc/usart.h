@@ -31,11 +31,11 @@ extern UART_HandleTypeDef huart2;
 
 void Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud);
 
-void Usart_Put(USART_TypeDef *usart, bool buffered, unsigned char c);
-void Usart_Write(USART_TypeDef *usart, bool buffered, unsigned char *data, uint8_t len);
+void Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c);
+void Usart_Write(UART_HandleTypeDef *usart, bool buffered, unsigned char *data, uint8_t len);
 
-void Usart_TxInt(USART_TypeDef *usart, bool enable);
-void Usart_RxInt(USART_TypeDef *usart, bool enable);
+void Usart_TxInt(UART_HandleTypeDef *usart, bool enable);
+void Usart_RxInt(UART_HandleTypeDef *usart, bool enable);
 
 
 #ifdef __cplusplus
