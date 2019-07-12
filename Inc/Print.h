@@ -10,10 +10,10 @@ extern "C" {
 
 
 void Print_Init(void);
-int Printf(const char *str, ...);
+int Printf(const unsigned char *str, ...);
 void PrintFloat(float n, uint8_t decimal_places);
-int8_t Getc(char *c);
-int Putc(const char c);
+int8_t Getc(unsigned char *c);
+int Putc(const unsigned char c);
 
 void Print_Flush(void);
 

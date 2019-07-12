@@ -19,7 +19,7 @@ main(void) {
     SystemClock_Config();
 
     // Init formatted output
-    Print_Init();   // Usart_Init(STDOUT, BAUD_RATE);
+//    Print_Init();   // Usart_Init(STDOUT, BAUD_RATE);
 
     MX_GPIO_Init();
     TIM1_Init();

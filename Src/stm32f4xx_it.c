@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
+#include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -74,7 +75,7 @@ extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
 void
-ProcessReceive(char c) {
+ProcessReceive(unsigned char c) {
     // Pick off realtime command characters directly from the serial stream. These characters are
     // not passed into the main buffer, but these set system state flag bits for realtime execution.
     switch(c)

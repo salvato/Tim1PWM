@@ -29,7 +29,6 @@ static uint8_t FifoInit = 0;
 
 void
 Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
-	GPIO_InitTypeDef GPIO_InitStructure;
 
 	if(!FifoInit) {
 		// Initialize fifo once

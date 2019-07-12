@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
 
 
@@ -30,8 +31,8 @@ extern UART_HandleTypeDef huart2;
 
 void Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud);
 
-void Usart_Put(USART_TypeDef *usart, bool buffered, char c);
-void Usart_Write(USART_TypeDef *usart, bool buffered, char *data, uint8_t len);
+void Usart_Put(USART_TypeDef *usart, bool buffered, unsigned char c);
+void Usart_Write(USART_TypeDef *usart, bool buffered, unsigned char *data, uint8_t len);
 
 void Usart_TxInt(USART_TypeDef *usart, bool enable);
 void Usart_RxInt(USART_TypeDef *usart, bool enable);

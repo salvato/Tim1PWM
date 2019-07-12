@@ -14,19 +14,19 @@
 #define MAX_BUFFER_SIZE     128
 
 
-static char buf[512] = {0};
+static unsigned char buf[512] = {0};
 static uint16_t buf_idx = 0;
 
 
 void
 Print_Init(void) {
-	Usart_Init(STDOUT, BAUD_RATE);
+    Usart_Init(&huart2, BAUD_RATE);
 }
 
 
 int
-Printf(const char *str, ...) {
-	char buffer[MAX_BUFFER_SIZE];
+Printf(const unsigned char *str, ...) {
+    unsigned char buffer[MAX_BUFFER_SIZE];
 	uint8_t idx = 0;
 
 	va_list vl;
@@ -51,7 +51,7 @@ Printf(const char *str, ...) {
 
 
 int8_t
-Getc(char *c) {
+Getc(unsigned char *c) {
 	if(FifoUsart_Get(STDOUT_NUM, USART_DIR_RX, c) == 0) {
 		return 0;
 	}
@@ -61,7 +61,7 @@ Getc(char *c) {
 
 
 int
-Putc(const char c) {
+Putc(const unsigned char c) {
     buf[buf_idx++] = c;
     //Usart_Put(STDOUT, false, c);
 
