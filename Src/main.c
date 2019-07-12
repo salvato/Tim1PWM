@@ -1,5 +1,6 @@
 #include "main.h"
 #include "tim.h"
+#include "Print.h"
 
 
 static void SystemClock_Config(void);
@@ -18,10 +19,14 @@ main(void) {
     HAL_Init();
     SystemClock_Config();
 
+    // Init formatted output
+    Print_Init();   // Usart_Init(STDOUT, BAUD_RATE);
+
+
     MX_GPIO_Init();
     TIM1_Init();
     TIM9_Init();
-    MX_USART2_UART_Init();
+//    MX_USART2_UART_Init();
 
     int light = (int)sConfigOC.Pulse;
     int iDir = 1;

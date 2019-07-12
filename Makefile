@@ -38,8 +38,10 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Src/tim.c \
+Src/Print.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \
+Src/system_stm32f4xx.c  \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
@@ -56,7 +58,6 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
-Src/system_stm32f4xx.c  
 
 # ASM sources
 ASM_SOURCES =  \
@@ -116,6 +117,8 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
+-Igrbl \
+-ILibraries/GrIP \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \

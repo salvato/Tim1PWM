@@ -6,10 +6,9 @@
   * Initializes the Global MSP.
   */
 void
-HAL_MspInit(void) {
+HAL_MspInit(void) {// Called by HAL_Init()
     __HAL_RCC_SYSCFG_CLK_ENABLE();
     __HAL_RCC_PWR_CLK_ENABLE();
-
     HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);
 }
 
@@ -21,7 +20,7 @@ HAL_MspInit(void) {
 * @retval None
 */
 void
-HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base) {
+HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base) {// Called by HAL_TIM_Base_Init()
     if(htim_base->Instance==TIM1)     {
 // Peripheral clock enable
         __HAL_RCC_TIM1_CLK_ENABLE();
@@ -77,7 +76,7 @@ HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base) {
 * @retval None
 */
 void
-HAL_UART_MspInit(UART_HandleTypeDef* huart) {
+HAL_UART_MspInit(UART_HandleTypeDef* huart) {// Called by HAL_UART_Init()
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     if(huart->Instance==USART2) {
 // Peripheral clock enable */
@@ -86,14 +85,16 @@ HAL_UART_MspInit(UART_HandleTypeDef* huart) {
 // USART2 GPIO Configuration
 //   PA2     ------> USART2_TX
 //   PA3     ------> USART2_RX
-        GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_PULLUP;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.Pin       = USART_TX_Pin|USART_RX_Pin;
+        GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Pull      = GPIO_PULLUP;
+        GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
         GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     }
-
+    else {
+        Error_Handler();
+    }
 }
 
 
