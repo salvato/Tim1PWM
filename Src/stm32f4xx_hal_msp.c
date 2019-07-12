@@ -1,8 +1,5 @@
+#include "tim.h"
 #include "main.h"
-
-
-void
-HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 
 /**

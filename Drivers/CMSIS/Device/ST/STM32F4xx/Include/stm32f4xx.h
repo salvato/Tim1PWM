@@ -69,9 +69,6 @@
 #define STM32F4
 #endif /* STM32F4 */
 
-#if !defined (STM32F411xE)
-#define STM32F411xE
-#endif
 
 /* Uncomment the line below according to the target STM32 device used in your
    application 

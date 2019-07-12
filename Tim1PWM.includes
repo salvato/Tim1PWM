@@ -52,3 +52,4 @@ Drivers/STM32F4xx_HAL_Driver/Inc
 Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
 Inc
 .
+Src
