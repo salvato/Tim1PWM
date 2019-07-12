@@ -19,10 +19,21 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
 #include "stm32f4xx_it.h"
+#include "stm32f4xx_hal_uart.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "main.h"
+#include "usart.h"
+#include "fifo_usart.h"
+#include "Limits.h"
+#include "Stepper.h"
+#include "System.h"
+#include "Settings.h"
+#include "Config.h"
+#include "MotionControl.h"
+#include "Platform.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +70,60 @@
 extern TIM_HandleTypeDef htim9;
 extern UART_HandleTypeDef huart2;
 
+
 /* USER CODE BEGIN EV */
+
+void
+ProcessReceive(char c) {
+    // Pick off realtime command characters directly from the serial stream. These characters are
+    // not passed into the main buffer, but these set system state flag bits for realtime execution.
+    switch(c)
+    {
+    case CMD_RESET:         MC_Reset(); break; // Call motion control reset routine.
+    case CMD_RESET_HARD:    NVIC_SystemReset();     // Perform hard reset
+    case CMD_STATUS_REPORT: System_SetExecStateFlag(EXEC_STATUS_REPORT);break;
+    case CMD_CYCLE_START:   System_SetExecStateFlag(EXEC_CYCLE_START); break; // Set as true
+    case CMD_FEED_HOLD:     System_SetExecStateFlag(EXEC_FEED_HOLD); break; // Set as true
+    case CMD_STEPPER_DISABLE:     Stepper_Disable(1); break; // Set as true
+
+    default:
+        if(c > 0x7F) { // Real-time control characters are extended ACSII only.
+            switch(c)
+            {
+            case CMD_SAFETY_DOOR: System_SetExecStateFlag(EXEC_SAFETY_DOOR); break; // Set as true
+            case CMD_JOG_CANCEL:
+                if(sys.state & STATE_JOG) { // Block all other states from invoking motion cancel.
+                    System_SetExecStateFlag(EXEC_MOTION_CANCEL);
+                }
+                break;
+
+            case CMD_FEED_OVR_RESET: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_RESET); break;
+            case CMD_FEED_OVR_COARSE_PLUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_PLUS); break;
+            case CMD_FEED_OVR_COARSE_MINUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_MINUS); break;
+            case CMD_FEED_OVR_FINE_PLUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_PLUS); break;
+            case CMD_FEED_OVR_FINE_MINUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_MINUS); break;
+            case CMD_RAPID_OVR_RESET: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_RESET); break;
+            case CMD_RAPID_OVR_MEDIUM: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_MEDIUM); break;
+            case CMD_RAPID_OVR_LOW: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_LOW); break;
+            case CMD_SPINDLE_OVR_RESET: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_RESET); break;
+            case CMD_SPINDLE_OVR_COARSE_PLUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_PLUS); break;
+            case CMD_SPINDLE_OVR_COARSE_MINUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_MINUS); break;
+            case CMD_SPINDLE_OVR_FINE_PLUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_PLUS); break;
+            case CMD_SPINDLE_OVR_FINE_MINUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_MINUS); break;
+            case CMD_SPINDLE_OVR_STOP: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_STOP); break;
+            case CMD_COOLANT_FLOOD_OVR_TOGGLE: System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_FLOOD_OVR_TOGGLE); break;
+#ifdef ENABLE_M7
+            case CMD_COOLANT_MIST_OVR_TOGGLE: System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_MIST_OVR_TOGGLE); break;
+#endif
+            }
+        // Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
+        }
+        else {
+            // Write character to buffer
+            FifoUsart_Insert(USART2_NUM, USART_DIR_RX, c);
+        }
+    }
+}
 
 /* USER CODE END EV */
 
@@ -229,14 +293,33 @@ TIM1_BRK_TIM9_IRQHandler(void) {
   */
 void
 USART2_IRQHandler(void) {
-  /* USER CODE BEGIN USART2_IRQn 0 */
+    if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE) != RESET) {
+        // Read one byte from the receive data register
+        unsigned char c;
+        HAL_UART_Receive(&huart2, &c, 1, 0);
+        ProcessReceive(c);
+    }
 
-  /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
-  /* USER CODE BEGIN USART2_IRQn 1 */
+    if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_TXE) != RESET) {
+        unsigned char c;
+        if(FifoUsart_Get(USART2_NUM, USART_DIR_TX, &c) == 0) {
+            // Write one byte to the transmit data register
+            while(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET);
+            HAL_UART_Transmit(&huart2, &c, 1, 0);
+        }
+        else {
+            // Nothing to transmit - disable interrupt
+            __HAL_UART_DISABLE_IT(&huart2, UART_IT_TXE);
+        }
+    }
 
-  /* USER CODE END USART2_IRQn 1 */
+    // If overrun condition occurs, clear the ORE flag and recover communication
+    if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE) != RESET) {
+        unsigned char c;
+        HAL_UART_Receive(&huart2, &c, 1, 0);
+    }
 }
+
 
 /* USER CODE BEGIN 1 */
 

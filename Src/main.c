@@ -5,7 +5,6 @@
 
 static void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
 
 
 TIM_HandleTypeDef htim1;
@@ -22,11 +21,9 @@ main(void) {
     // Init formatted output
     Print_Init();   // Usart_Init(STDOUT, BAUD_RATE);
 
-
     MX_GPIO_Init();
     TIM1_Init();
     TIM9_Init();
-//    MX_USART2_UART_Init();
 
     int light = (int)sConfigOC.Pulse;
     int iDir = 1;
@@ -93,22 +90,6 @@ SystemClock_Config(void) {
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
     // SysTick_IRQn interrupt configuration
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
-}
-
-
-void
-MX_USART2_UART_Init(void) {
-    huart2.Instance = USART2;
-    huart2.Init.BaudRate = 115200;
-    huart2.Init.WordLength = UART_WORDLENGTH_8B;
-    huart2.Init.StopBits = UART_STOPBITS_1;
-    huart2.Init.Parity = UART_PARITY_NONE;
-    huart2.Init.Mode = UART_MODE_TX_RX;
-    huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-    huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-    if (HAL_UART_Init(&huart2) != HAL_OK) {
-        Error_Handler();
-    }
 }
 
 

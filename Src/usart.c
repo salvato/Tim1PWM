@@ -50,25 +50,16 @@ Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
         if (HAL_UART_Init(pUsart) != HAL_OK) {
             Error_Handler();
         }
-
-		NVIC_InitTypeDef NVIC_InitStructure;
-
-		/* Enable the USARTx Interrupt */
-		NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
     }
     else {
         Error_Handler();
     }
 
-    /* Enable the Receive interrupt*/
-	USART_ITConfig(usart, USART_IT_RXNE, ENABLE);
+    // Enable the Receive interrupt
+    __HAL_UART_ENABLE_IT(pUsart, UART_IT_RXNE);
 
-	/* Enable USART */
-	USART_Cmd(usart, ENABLE);
+    // Enable USART
+    __HAL_UART_ENABLE(pUsart);
 }
 
 

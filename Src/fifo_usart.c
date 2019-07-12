@@ -46,7 +46,7 @@ void FifoUsart_Init(void)
 }
 
 
-int8_t FifoUsart_Insert(uint8_t usart, uint8_t direction, char ch)
+int8_t FifoUsart_Insert(uint8_t usart, uint8_t direction, unsigned char ch)
 {
 	if(usart >= USART_NUM) {
 		d_printf("ERROR: Wrong USART %d\n", usart);
@@ -74,7 +74,7 @@ int8_t FifoUsart_Insert(uint8_t usart, uint8_t direction, char ch)
 }
 
 
-int8_t FifoUsart_Get(uint8_t usart, uint8_t direction, char *ch)
+int8_t FifoUsart_Get(uint8_t usart, uint8_t direction, unsigned char *ch)
 {
 	if(usart >= USART_NUM) {
 		d_printf("ERROR: Wrong USART %d\n", usart);
