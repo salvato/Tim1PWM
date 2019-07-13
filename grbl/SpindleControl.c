@@ -22,12 +22,12 @@
 #include "Protocol.h"
 #include "Settings.h"
 #include "System.h"
-#include "GPIO.h"
-#include "TIM.h"
+#include "gpio.h"
+#include "tim.h"
 #include "GCode.h"
 #include "SpindleControl.h"
 #include "Config.h"
-#include "stm32f4xx_tim.h"
+#include "stm32f4xx_hal_tim.h"
 
 
 static float pwm_gradient; // Precalculated value to speed up rpm to PWM conversions.

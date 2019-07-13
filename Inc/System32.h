@@ -18,8 +18,8 @@
 #ifndef SYSTEM32_H_INCLUDED
 #define SYSTEM32_H_INCLUDED
 
-#include "stm32f4xx_hal_conf.h"
-#include "stm32f4xx_it.h"
+
+#include "stm32f4xx_hal.h"
 
 
 #ifdef __cplusplus
@@ -33,6 +33,7 @@ typedef struct {
 	uint8_t Seconds;
 } Time_t;
 
+
 typedef struct {
 	uint16_t Year;
 	uint8_t Month;
@@ -40,8 +41,6 @@ typedef struct {
 } Date_t;
 
 
-
-void SysTick_Init(void);
 void Delay_us(volatile uint32_t us);
 void Delay_ms(volatile uint32_t ms);
 

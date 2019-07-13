@@ -20,7 +20,7 @@
 */
 #include "System.h"
 #include "Protocol.h"
-#include "GPIO.h"
+#include "gpio.h"
 #include "GCode.h"
 #include "CoolantControl.h"
 #include "Config.h"

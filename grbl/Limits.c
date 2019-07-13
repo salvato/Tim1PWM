@@ -28,7 +28,7 @@
 #include "Stepper.h"
 #include "Protocol.h"
 #include "Limits.h"
-#include "GPIO.h"
+#include "gpio.h"
 
 #include "System32.h"
 

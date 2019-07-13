@@ -33,7 +33,6 @@
 #include "gpio.h"
 #include "System32.h"
 
-
 // Some useful constants.
 #define DT_SEGMENT						(1.0f/(ACCELERATION_TICKS_PER_SECOND*60.0f)) // min/segment
 #define REQ_MM_INCREMENT_SCALAR 		1.25
@@ -244,7 +243,7 @@ Stepper_WakeUp(void) {
 	st.step_outbits = 0;
 
 	// Enable Stepper Driver Interrupt
-	TIM_Cmd(TIM9, ENABLE);
+    __HAL_TIM_ENABLE_IT(&htim9, TIM_IT_UPDATE|TIM_IT_CC1);
 }
 
 
@@ -252,8 +251,8 @@ Stepper_WakeUp(void) {
 void
 Stepper_Disable(uint8_t ovr_disable) {
 	// Disable Stepper Driver Interrupt.
-	TIM_Cmd(TIM9, DISABLE);
-	Delay_us(1);
+    __HAL_TIM_DISABLE_IT(&htim9, TIM_IT_UPDATE|TIM_IT_CC1);
+    Delay_us(1);
 
 	// Reset stepper pins
 	Stepper_PortResetISR();

@@ -111,6 +111,9 @@
 
 #define isequal_position_vector(a,b) !(memcmp(a, b, sizeof(float)*N_AXIS))
 
+#define GPIO_SetBits(Port, Pin) HAL_GPIO_WritePin(Port, Pin, GPIO_PIN_SET)
+#define GPIO_ResetBits(Port, Pin) HAL_GPIO_WritePin(Port, Pin, GPIO_PIN_RESET)
+
 
 // Read a floating point value from a string. Line points to the input buffer, char_counter
 // is the indexer pointing to the current character of the line, while float_ptr is

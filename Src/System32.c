@@ -18,22 +18,10 @@
 #include "System32.h"
 
 
-void SysTick_Init(void)
-{
-	RCC_ClocksTypeDef RCC_Clocks;
-
-	/* SysTick end of count event each 1ms */
-  	RCC_GetClocksFreq(&RCC_Clocks);
-  	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
-
-  	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 5, 5));
-}
-
-
 // for 100 MHz STM32F411
 #define COUNTS_PER_MICROSECOND	33
-void Delay_us(volatile uint32_t us)
-{
+void
+Delay_us(volatile uint32_t us) {
 	volatile uint32_t count = us * COUNTS_PER_MICROSECOND - 2;
 	__asm volatile(" mov r0, %[count]  \n\t"
 			"1: subs r0, #1            \n\t"
@@ -44,8 +32,8 @@ void Delay_us(volatile uint32_t us)
 }
 
 
-void Delay_ms(volatile uint32_t ms)
-{
+void
+Delay_ms(volatile uint32_t ms) {
 	while(ms--)
 		Delay_us(999);
 }
