@@ -42,6 +42,9 @@ Src/usart.c \
 Src/fifo_usart.c \
 Src/Print.c \
 Src/System32.c \
+SRC/eeprom.c \
+Src/M24C0X.c \
+Src/I2C.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \
 Src/system_stm32f4xx.c  \
