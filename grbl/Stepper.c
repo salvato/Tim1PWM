@@ -28,9 +28,9 @@
 #include "System.h"
 #include "Settings.h"
 #include "util.h"
-#include "TIM.h"
+#include "tim.h"
 #include "Stepper.h"
-#include "GPIO.h"
+#include "gpio.h"
 #include "System32.h"
 
 

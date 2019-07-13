@@ -2577,6 +2577,7 @@ Inc/Platform.h
 Inc/Print.h
 Inc/Print.h
 Inc/Print.h
+Inc/System32.h
 Inc/debug.h
 Inc/fifo_usart.h
 Inc/gpio.h
@@ -2616,6 +2617,7 @@ Src/FIFO_USART.c
 Src/Print.c
 Src/Print.c
 Src/Print.c
+Src/System32.c
 Src/fifo_usart.c
 Src/gpio.c
 Src/gpio.c

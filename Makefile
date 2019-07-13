@@ -44,6 +44,9 @@ Src/Print.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \
 Src/system_stm32f4xx.c  \
+grbl/System.c \
+grbl/MotionControl.c \
+grbl/Stepper.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \

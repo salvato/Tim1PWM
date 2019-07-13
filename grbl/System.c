@@ -21,7 +21,7 @@
 #include <string.h>
 #include "Config.h"
 #include "GCode.h"
-#include "GPIO.h"
+#include "gpio.h"
 #include "MotionControl.h"
 #include "Protocol.h"
 #include "Report.h"
@@ -61,10 +61,10 @@ void System_ResetPosition(void)
 uint8_t System_GetControlState(void)
 {
 	uint8_t control_state = 0;
-	uint8_t pin = ((GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)<<CONTROL_RESET_BIT) |
-					(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1)<<CONTROL_FEED_HOLD_BIT) |
-					(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4)<<CONTROL_CYCLE_START_BIT) |
-					(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8)<<CONTROL_SAFETY_DOOR_BIT));
+    uint8_t pin = ((GPIO_ReadInputDataBit(GPIO_CTRL_RST_PORT, GPIO_CTRL_RST_PIN)<<CONTROL_RESET_BIT) |
+                    (GPIO_ReadInputDataBit(GPIO_CTRL_FEED_PORT, GPIO_CTRL_FEED_PIN)<<CONTROL_FEED_HOLD_BIT) |
+                    (GPIO_ReadInputDataBit(GPIO_CTRL_START_PORT, GPIO_CTRL_START_PIN)<<CONTROL_CYCLE_START_BIT) |
+                    (GPIO_ReadInputDataBit(GPIO_DOOR_PORT, GPIO_DOOR_PIN)<<CONTROL_SAFETY_DOOR_BIT));
 
 	// Invert control pins if necessary
 	//pin ^= CONTROL_MASK & settings.system_flags;
