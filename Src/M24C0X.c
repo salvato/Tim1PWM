@@ -38,7 +38,7 @@ void M24C0X_Init(void)
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
     // Initialize write protection pin
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+    GPIO_InitStructure.GPIO_Pin = GPIO_PIN_12;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -46,7 +46,7 @@ void M24C0X_Init(void)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     // Enable write protection
-	GPIO_SetBits(GPIOB, GPIO_Pin_12);
+    GPIO_SetBits(GPIOB, GPIO_PIN_12);
 
     I2C_Mode_t mode = {I2C_SPEED, I2C_Mode_I2C, I2C_Ack_Enable};
     I2C_Initialize(M24C0X_I2C, &mode);

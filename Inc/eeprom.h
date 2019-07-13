@@ -31,7 +31,7 @@
 /* EEPROM start address in Flash */
 #define EEPROM_START_ADDRESS	((uint32_t)0x08060000) /* EEPROM emulation start address (last sector): 384 Kb */
 
-#define FLASH_SECTOR			FLASH_Sector_7
+#define FLASH_SECTOR			FLASH_SECTOR_7
 
 
 void EE_Init(void);
