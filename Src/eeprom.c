@@ -70,7 +70,7 @@ EE_Program(void) {
 	EE_Erase();
     HAL_FLASH_Unlock();
 	for(uint16_t i = 0; i < EEPROM_SIZE; ++i) {
-        FLASH_ProgramByte(EEPROM_START_ADDRESS + i, EepromData[i]);
+        HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE, EEPROM_START_ADDRESS + i, EepromData[i]);
 	}
 
     HAL_FLASH_Lock();
