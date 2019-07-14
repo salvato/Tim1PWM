@@ -3,6 +3,8 @@
 
 
 #include <stdint.h>
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_i2c.h"
 
 
 #define EE_FLAG_TIMEOUT         ((uint32_t)0x1000)
@@ -13,9 +15,13 @@
 extern "C" {
 #endif
 
+extern I2C_HandleTypeDef hi2c1;
+
 
 typedef enum {
-    I2C_1 = 0, I2C_2, I2C_3
+    I2C_1 = 0,
+    I2C_2,
+    I2C_3
 } I2C_Peripheral_e;
 
 

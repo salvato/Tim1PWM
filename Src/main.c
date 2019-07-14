@@ -1,5 +1,7 @@
 #include "main.h"
 #include "tim.h"
+#include "I2C.h"
+#include "usart.h"
 #include "Print.h"
 
 
@@ -9,6 +11,7 @@ static void MX_GPIO_Init(void);
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim9;
+I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 TIM_OC_InitTypeDef sConfigOC;
 
