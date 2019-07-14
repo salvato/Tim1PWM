@@ -1,28 +1,30 @@
 #include "eeprom.h"
 #include <string.h>
-#include "stm32f4xx_hal_flash.h"
 
 
 static uint8_t EepromData[EEPROM_SIZE];
 
 
-void EE_Init(void)
-{
+void
+EE_Init(void) {
 	memcpy(EepromData, (uint8_t*)EEPROM_START_ADDRESS, EEPROM_SIZE);
 }
 
-uint8_t EE_ReadByte(uint16_t VirtAddress)
-{
+
+uint8_t
+EE_ReadByte(uint16_t VirtAddress) {
 	return EepromData[VirtAddress];
 }
 
-void EE_WriteByte(uint16_t VirtAddress, uint8_t Data)
-{
+
+void
+EE_WriteByte(uint16_t VirtAddress, uint8_t Data) {
 	EepromData[VirtAddress] = Data;
 }
 
-uint8_t EE_ReadByteArray(uint8_t *DataOut, uint16_t VirtAddress, uint16_t size)
-{
+
+uint8_t
+EE_ReadByteArray(uint8_t *DataOut, uint16_t VirtAddress, uint16_t size) {
 	uint8_t data, checksum = 0;
 
 	for(; size > 0; size--) {
@@ -44,8 +46,9 @@ uint8_t EE_ReadByteArray(uint8_t *DataOut, uint16_t VirtAddress, uint16_t size)
 	return 0;
 }
 
-void EE_WriteByteArray(uint16_t VirtAddress, uint8_t *DataIn, uint16_t size)
-{
+
+void
+EE_WriteByteArray(uint16_t VirtAddress, uint8_t *DataIn, uint16_t size) {
 	unsigned char checksum = 0;
 
 	for(; size > 0; size--) {
@@ -61,24 +64,22 @@ void EE_WriteByteArray(uint16_t VirtAddress, uint8_t *DataIn, uint16_t size)
 	EE_WriteByte(VirtAddress, checksum);
 }
 
-void EE_Program(void)
-{
+
+void
+EE_Program(void) {
 	EE_Erase();
-
-	FLASH_Unlock();
-
+    HAL_FLASH_Unlock();
 	for(uint16_t i = 0; i < EEPROM_SIZE; ++i) {
-		FLASH_ProgramByte(EEPROM_START_ADDRESS + i, EepromData[i]);
+        FLASH_ProgramByte(EEPROM_START_ADDRESS + i, EepromData[i]);
 	}
 
-	FLASH_Lock();
+    HAL_FLASH_Lock();
 }
 
-void EE_Erase(void)
-{
-	FLASH_Unlock();
 
-	FLASH_EraseSector(FLASH_SECTOR, VOLTAGE_RANGE);
-
-	FLASH_Lock();
+void
+EE_Erase(void) {
+    HAL_FLASH_Unlock();
+    FLASH_Erase_Sector(FLASH_SECTOR, VOLTAGE_RANGE);
+    HAL_FLASH_Unlock();
 }

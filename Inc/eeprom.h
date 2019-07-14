@@ -21,12 +21,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 #include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_flash.h"
 
 
 #define EEPROM_SIZE				1024
 
 /* Device voltage range supposed to be [2.7V to 3.6V], the operation will be done by word  */
-#define VOLTAGE_RANGE			(uint8_t)VoltageRange_3
+#define VOLTAGE_RANGE			FLASH_VOLTAGE_RANGE_3
 
 /* EEPROM start address in Flash */
 #define EEPROM_START_ADDRESS	((uint32_t)0x08060000) /* EEPROM emulation start address (last sector): 384 Kb */
