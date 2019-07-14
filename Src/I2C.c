@@ -25,22 +25,17 @@ I2C_Initialize(I2C_Peripheral_e i2c, I2C_Mode_t *mode) {
       Error_Handler();
     }
 
-
-    if(mode != 0)
-    {
+    if(mode != 0) {
         /*!< I2C configuration */
         /* sEE_I2C configuration */
-        I2C_InitStructure.I2C_Mode = mode->Mode;
-        I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
-        I2C_InitStructure.I2C_OwnAddress1 = 0x0;
-        I2C_InitStructure.I2C_Ack = mode->Ack;
-        I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-        I2C_InitStructure.I2C_ClockSpeed = mode->Speed;
+        hi2c1.Init.Mode = mode->Mode;
+        hi2c1.Init.DutyCycle = I2C_DutyCycle_2;
+        hi2c1.Init.OwnAddress1 = 0x0;
+        hi2c1.Init.I2C_Ack = mode->Ack;
+        hi2c1.Init.AddressingMode = I2C_AcknowledgedAddress_7bit;
+        hi2c1.Init.ClockSpeed = mode->Speed;
 
-
-        if(i2c == I2C_1)
-        {
-
+        if(i2c == I2C_1) {
             I2C_SoftwareResetCmd(I2C1, ENABLE);
             Delay_ms(1);
             I2C_SoftwareResetCmd(I2C1, DISABLE);

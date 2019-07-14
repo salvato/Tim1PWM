@@ -4,7 +4,7 @@
 #include "stm32f4xx_hal_i2c.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_it.h"
-#include "util.h"
+#include "../grbl/util.h"
 
 
 #define I2C_SPEED               200000
@@ -31,24 +31,23 @@ static inline void M24C0X_WriteProtection(uint8_t enable);
 
 
 
-void M24C0X_Init(void)
-{
+void
+M24C0X_Init(void) {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+    __HAL_RCC_GPIOB_CLK_ENABLE();
 
     // Initialize write protection pin
-    GPIO_InitStructure.GPIO_Pin = GPIO_PIN_12;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_InitStructure.Pin = GPIO_PIN_12;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     // Enable write protection
     GPIO_SetBits(GPIOB, GPIO_PIN_12);
 
-    I2C_Mode_t mode = {I2C_SPEED, I2C_Mode_I2C, I2C_Ack_Enable};
+    I2C_Mode_t mode = {I2C_SPEED, HAL_I2C_MODE_SLAVE, I2C_Ack_Enable};
     I2C_Initialize(M24C0X_I2C, &mode);
 }
 
