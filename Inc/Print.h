@@ -7,6 +7,8 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_uart.h"
 
 
 void Print_Init(UART_HandleTypeDef* pUart);
