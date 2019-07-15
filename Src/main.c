@@ -1,11 +1,24 @@
 #include "main.h"
 #include "tim.h"
+#include "fifo_usart.h"
 #include "usart.h"
+#include "CoolantControl.h"
+#include "GCode.h"
+#include "Limits.h"
+#include "MotionControl.h"
+#include "ToolChange.h"
 #include "Print.h"
+#include "Probe.h"
+#include "Protocol.h"
+#include "Report.h"
+#include "SpindleControl.h"
+#include "System.h"
+#include "Stepper.h"
+#include "Settings.h"
+#include "System32.h"
 
 
 static void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 
 
 TIM_HandleTypeDef htim1;
@@ -14,38 +27,83 @@ UART_HandleTypeDef huart2;
 TIM_OC_InitTypeDef sConfigOC;
 
 
+// Declare system global variable structure
+System_t sys;
+int32_t sys_position[N_AXIS];                    // Real-time machine (aka home) position vector in steps.
+int32_t sys_probe_position[N_AXIS];              // Last probe position in machine coordinates and steps.
+volatile uint8_t sys_probe_state;                // Probing state value.  Used to coordinate the probing cycle with stepper ISR.
+volatile uint16_t sys_rt_exec_state;             // Global realtime executor bitflag variable for state management. See EXEC bitmasks.
+volatile uint8_t sys_rt_exec_alarm;              // Global realtime executor bitflag variable for setting various alarms.
+volatile uint8_t sys_rt_exec_motion_override;    // Global realtime executor bitflag variable for motion-based overrides.
+volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bitflag variable for spindle/coolant overrides.
+
+
 int
 main(void) {
     HAL_Init();
     SystemClock_Config();
 
     // Init formatted output
-//    Print_Init();   // Usart_Init(STDOUT, BAUD_RATE);
+    Print_Init();   // Usart_Init(huart2, BAUD_RATE);
 
-    MX_GPIO_Init();
-    TIM1_Init();
-    TIM9_Init();
+    System_Init();  // GPIO_InitGPIO(GPIO_SYSTEM);
+    Stepper_Init(); // Configure step and direction interface pins & Timer9 (Used for Stepper Interrupt)
+    Settings_Init();// Initialize the config subsystem
 
-    int light = (int)sConfigOC.Pulse;
-    int iDir = 1;
+    System_ResetPosition();// Clear machine position.
+    if(BIT_IS_TRUE(settings.flags, BITFLAG_HOMING_ENABLE)) {
+        sys.state = STATE_ALARM;
+    }
+    else {
+        sys.state = STATE_IDLE;
+    }
 
-    // You MUST call HAL_TIM_PWM_Start() after every call to HAL_TIM_PWM_ConfigChannel()
-    HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_Base_Start_IT(&htim9);
-
+    // Grbl-Advanced initialization loop upon power-up or a system abort.
+    // For the latter, all processes will return to this loop to be cleanly
+    // re-initialized.
     while(1) {
-        if(light >= (int)htim1.Init.Period) {
-            iDir = -1;
-        }
-        else if(light < 1) {
-            iDir = 1;
-        }
-        light += iDir;
-        sConfigOC.Pulse = (unsigned int)light;
-        HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);// Is this needed ??
-        HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1);
-        HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
-        HAL_Delay(30);
+        // Reset system variables.
+        uint16_t prior_state = sys.state;
+        uint8_t home_state = sys.is_homed;
+        System_Clear();           // Clear sys struct variable
+        sys.state = prior_state;  // Restore previous system state
+        sys.is_homed = home_state;// and homing state.
+
+        Probe_Reset();// Clear probe position structure
+
+        sys_probe_state = 0;// Used to coordinate the probing cycle with stepper ISR.
+        sys_rt_exec_state = 0;// Realtime executor bitflag variable for state management. See EXEC bitmasks.
+        sys_rt_exec_alarm = 0;// Realtime executor bitflag variable for setting various alarms.
+        sys_rt_exec_motion_override = 0;// Realtime executor bitflag variable for motion-based overrides.
+        sys_rt_exec_accessory_override = 0;// Realtime executor bitflag variable for spindle/coolant overrides.
+
+        // Reset Grbl-Advanced primary systems.
+        GC_Init(); // G-Code interpreter Init
+        Planner_Init();
+        MC_Init(); // Motion Control Init
+        TC_Init(); // Tool Change Init
+
+        Coolant_Init();
+        Limits_Init();
+        Probe_Init();
+        Spindle_Init();
+        Stepper_Reset();
+
+        // Sync cleared gcode and planner positions to current system position.
+        Planner_SyncPosition(); // Reset the planner position vectors.
+        GC_SyncPosition(); // Sets g-code parser position in mm. Input in steps.
+
+        // Print welcome message.
+        // Indicates an initialization has occured at power-up or with a reset.
+        Report_InitMessage();
+
+        //-------------------------------------------------------------------//
+        //-- Start Grbl-Advanced main loop.
+        //-- Processes program inputs and executes them.
+        Protocol_MainLoop(); // defined in Protocol.c
+
+        // Clear serial buffer after soft reset to prevent undefined behavior
+        FifoUsart_Init();
     }
 }
 
@@ -91,30 +149,6 @@ SystemClock_Config(void) {
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
     // SysTick_IRQn interrupt configuration
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
-}
-
-
-void
-MX_GPIO_Init(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOH_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-    /*Configure GPIO pin : B1_Pin */
-    GPIO_InitStruct.Pin = B1_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-    /*Configure GPIO pin : LD2_Pin */
-    GPIO_InitStruct.Pin = LD2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 }
 
 

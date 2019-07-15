@@ -37,6 +37,7 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Src/main.c \
+Src/gpio.c \
 Src/tim.c \
 Src/usart.c \
 Src/fifo_usart.c \
@@ -139,7 +140,6 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -IInc \
 -Igrbl \
--ILibraries/GrIP \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \

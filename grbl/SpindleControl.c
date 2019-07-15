@@ -88,7 +88,7 @@ Spindle_SetSpeed(uint8_t pwm_value) {
 		Spindle_Stop();
 	}
 	else {
-		TIM_Cmd(TIM1, ENABLE); // Ensure PWM output is enabled.
+        HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
   #ifdef INVERT_SPINDLE_ENABLE_PIN
 		GPIO_ResetBits(GPIO_SPINDLE_ENA_PORT, GPIO_SPINDLE_ENA_PIN);
   #else

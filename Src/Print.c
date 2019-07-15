@@ -7,7 +7,6 @@
 #include "usart.h"
 #include "fifo_usart.h"
 #include "Settings.h"
-#include "GrIP.h"
 #include "Platform.h"
 
 
@@ -41,7 +40,7 @@ Printf(const unsigned char *str, ...) {
     for(uint8_t j = 0; j < i; j++) {
         buf[buf_idx++] = buffer[j];
     }
-    //Usart_Write(STDOUT, false, buffer, i);
+    Usart_Write(&huart2, false, buffer, i);
 
     va_end(vl);
 
@@ -63,7 +62,7 @@ Getc(unsigned char *c) {
 int
 Putc(const unsigned char c) {
     buf[buf_idx++] = c;
-    //Usart_Put(STDOUT, false, c);
+    Usart_Put(&huart2, false, c);
 
 	return 0;
 }
@@ -71,7 +70,7 @@ Putc(const unsigned char c) {
 
 void
 Print_Flush(void) {
-    Usart_Write(STDOUT, false, buf, (uint8_t)buf_idx);
+    Usart_Write(&huart2, false, buf, (uint8_t)buf_idx);
     memset(buf, 0, 512);
     buf_idx = 0;
 }

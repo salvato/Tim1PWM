@@ -44,7 +44,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
- 
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,10 +55,20 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 
+volatile uint8_t DebounceCounterControl = 0;
+volatile uint8_t DebounceCounterLimits = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
+
+extern void Limit_PinChangeISR(void);
+extern void System_PinChangeISR(void);
+
+
+// Counter for milliseconds
+static volatile uint32_t gMillis = 0;
 
 /* USER CODE END PFP */
 
@@ -73,6 +83,12 @@ extern UART_HandleTypeDef huart2;
 
 
 /* USER CODE BEGIN EV */
+
+uint32_t
+millis(void) {
+    return gMillis;
+}
+
 
 void
 ProcessReceive(unsigned char c) {
@@ -117,7 +133,7 @@ ProcessReceive(unsigned char c) {
             case CMD_COOLANT_MIST_OVR_TOGGLE: System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_MIST_OVR_TOGGLE); break;
 #endif
             }
-        // Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
+            // Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
         }
         else {
             // Write character to buffer
@@ -136,12 +152,12 @@ ProcessReceive(unsigned char c) {
   */
 void
 NMI_Handler(void) {
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+    /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+    /* USER CODE END NonMaskableInt_IRQn 0 */
+    /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
 
-  /* USER CODE END NonMaskableInt_IRQn 1 */
+    /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
 
@@ -150,13 +166,13 @@ NMI_Handler(void) {
   */
 void __attribute__ ((noreturn))
 HardFault_Handler(void) {
-  /* USER CODE BEGIN HardFault_IRQn 0 */
+    /* USER CODE BEGIN HardFault_IRQn 0 */
 
-  /* USER CODE END HardFault_IRQn 0 */
-  while (1) {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
-  }
+    /* USER CODE END HardFault_IRQn 0 */
+    while (1) {
+        /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+        /* USER CODE END W1_HardFault_IRQn 0 */
+    }
 }
 
 
@@ -165,13 +181,13 @@ HardFault_Handler(void) {
   */
 void __attribute__ ((noreturn))
 MemManage_Handler(void) {
-  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+    /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
-  /* USER CODE END MemoryManagement_IRQn 0 */
-  while (1) {
-    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    /* USER CODE END W1_MemoryManagement_IRQn 0 */
-  }
+    /* USER CODE END MemoryManagement_IRQn 0 */
+    while (1) {
+        /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+        /* USER CODE END W1_MemoryManagement_IRQn 0 */
+    }
 }
 
 
@@ -180,13 +196,13 @@ MemManage_Handler(void) {
   */
 void __attribute__ ((noreturn))
 BusFault_Handler(void) {
-  /* USER CODE BEGIN BusFault_IRQn 0 */
+    /* USER CODE BEGIN BusFault_IRQn 0 */
 
-  /* USER CODE END BusFault_IRQn 0 */
-  while (1) {
-    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    /* USER CODE END W1_BusFault_IRQn 0 */
-  }
+    /* USER CODE END BusFault_IRQn 0 */
+    while (1) {
+        /* USER CODE BEGIN W1_BusFault_IRQn 0 */
+        /* USER CODE END W1_BusFault_IRQn 0 */
+    }
 }
 
 
@@ -195,13 +211,13 @@ BusFault_Handler(void) {
   */
 void __attribute__ ((noreturn))
 UsageFault_Handler(void) {
-  /* USER CODE BEGIN UsageFault_IRQn 0 */
+    /* USER CODE BEGIN UsageFault_IRQn 0 */
 
-  /* USER CODE END UsageFault_IRQn 0 */
-  while (1) {
-    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    /* USER CODE END W1_UsageFault_IRQn 0 */
-  }
+    /* USER CODE END UsageFault_IRQn 0 */
+    while (1) {
+        /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+        /* USER CODE END W1_UsageFault_IRQn 0 */
+    }
 }
 
 
@@ -210,12 +226,12 @@ UsageFault_Handler(void) {
   */
 void
 SVC_Handler(void) {
-  /* USER CODE BEGIN SVCall_IRQn 0 */
+    /* USER CODE BEGIN SVCall_IRQn 0 */
 
-  /* USER CODE END SVCall_IRQn 0 */
-  /* USER CODE BEGIN SVCall_IRQn 1 */
+    /* USER CODE END SVCall_IRQn 0 */
+    /* USER CODE BEGIN SVCall_IRQn 1 */
 
-  /* USER CODE END SVCall_IRQn 1 */
+    /* USER CODE END SVCall_IRQn 1 */
 }
 
 
@@ -224,12 +240,12 @@ SVC_Handler(void) {
   */
 void
 DebugMon_Handler(void) {
-  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
+    /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
-  /* USER CODE END DebugMonitor_IRQn 0 */
-  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
+    /* USER CODE END DebugMonitor_IRQn 0 */
+    /* USER CODE BEGIN DebugMonitor_IRQn 1 */
 
-  /* USER CODE END DebugMonitor_IRQn 1 */
+    /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
 
@@ -238,12 +254,12 @@ DebugMon_Handler(void) {
   */
 void
 PendSV_Handler(void) {
-  /* USER CODE BEGIN PendSV_IRQn 0 */
+    /* USER CODE BEGIN PendSV_IRQn 0 */
 
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
+    /* USER CODE END PendSV_IRQn 0 */
+    /* USER CODE BEGIN PendSV_IRQn 1 */
 
-  /* USER CODE END PendSV_IRQn 1 */
+    /* USER CODE END PendSV_IRQn 1 */
 }
 
 
@@ -252,13 +268,43 @@ PendSV_Handler(void) {
   */
 void
 SysTick_Handler(void) {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
+    /* USER CODE BEGIN SysTick_IRQn 0 */
 
-  /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
+    /* USER CODE END SysTick_IRQn 0 */
+    HAL_IncTick();
+    /* USER CODE BEGIN SysTick_IRQn 1 */
+    /*
+     * Because of the board layout, we cant attach all pins to interrupts.
+     * Therefore we just poll them in this 1ms task, which is hopefully fast
+     * enough for critical events. Debouncing pins is also implemented here.
+     */
+    uint8_t limits = Limits_GetState();
+    if(limits) {
+        // X-Y-Z Limit
+        if((DebounceCounterLimits == 0) && settings.system_flags & BITFLAG_ENABLE_LIMITS) {
+            DebounceCounterLimits = 20;
+            Limit_PinChangeISR();
+        }
+    }
 
-  /* USER CODE END SysTick_IRQn 1 */
+    uint8_t controls = System_GetControlState();
+    if(controls) {
+        // System control
+        if(DebounceCounterControl == 0) {
+            DebounceCounterControl = 20;
+            System_PinChangeISR();
+        }
+    }
+
+    if(DebounceCounterLimits && !limits) {
+        DebounceCounterLimits--;
+    }
+    if(DebounceCounterControl && !controls) {
+        DebounceCounterControl--;
+    }
+
+    gMillis++;
+    /* USER CODE END SysTick_IRQn 1 */
 }
 
 
@@ -276,16 +322,15 @@ SysTick_Handler(void) {
 void
 TIM1_BRK_TIM9_IRQHandler(void) {
     if (__HAL_TIM_GET_FLAG(&htim9, TIM_FLAG_CC1) != RESET) {
-// OC
-//        Stepper_MainISR();
+        // OC
+         Stepper_MainISR();
         __HAL_TIM_CLEAR_IT(&htim9, TIM_IT_CC1);
     }
-    if (__HAL_TIM_GET_FLAG(&htim9, TIM_FLAG_UPDATE) != RESET) {
-// OVF
-//        Stepper_PortResetISR();
+    else if (__HAL_TIM_GET_FLAG(&htim9, TIM_FLAG_UPDATE) != RESET) {
+        // OVF
+        Stepper_PortResetISR();
         __HAL_TIM_CLEAR_IT(&htim9, TIM_IT_UPDATE);
     }
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
 

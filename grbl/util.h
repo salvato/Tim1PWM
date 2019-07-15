@@ -113,6 +113,7 @@
 
 #define GPIO_SetBits(Port, Pin) HAL_GPIO_WritePin(Port, Pin, GPIO_PIN_SET)
 #define GPIO_ResetBits(Port, Pin) HAL_GPIO_WritePin(Port, Pin, GPIO_PIN_RESET)
+#define GPIO_ReadInputDataBit(Port, Pin) HAL_GPIO_ReadPin(Port, Pin)
 
 
 // Read a floating point value from a string. Line points to the input buffer, char_counter

@@ -22,44 +22,38 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_rcc.h"
+#include "stm32f4xx_hal_uart.h"
 //#include "misc.h"
 
 
 static uint8_t FifoInit = 0;
-
+uint8_t c;
 
 void
 Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
-
-	if(!FifoInit) {
-		// Initialize fifo once
+    if(!FifoInit) {// Initialize fifo once
 		FifoUsart_Init();
 		FifoInit = 1;
 	}
 
-    if(pUsart->Instance == USART2) {
-        pUsart->Init.BaudRate     = baud;
-        pUsart->Init.WordLength   = UART_WORDLENGTH_8B;
-        pUsart->Init.StopBits     = UART_STOPBITS_1;
-        pUsart->Init.Parity       = UART_PARITY_NONE;
-        pUsart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-        pUsart->Init.Mode         = UART_MODE_TX_RX;
-        pUsart->Init.OverSampling = UART_OVERSAMPLING_8;
+    pUsart->Instance = USART2;
+    pUsart->Init.BaudRate     = baud;
+    pUsart->Init.WordLength   = UART_WORDLENGTH_8B;
+    pUsart->Init.StopBits     = UART_STOPBITS_1;
+    pUsart->Init.Parity       = UART_PARITY_NONE;
+    pUsart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+    pUsart->Init.Mode         = UART_MODE_TX_RX;
+    pUsart->Init.OverSampling = UART_OVERSAMPLING_16;
 
-        /* USART configuration */
-        if (HAL_UART_Init(pUsart) != HAL_OK) {
-            Error_Handler();
-        }
-    }
-    else {
+    // USART configuration
+    if (HAL_UART_Init(pUsart) != HAL_OK) {
         Error_Handler();
     }
-
     // Enable the Receive interrupt
     __HAL_UART_ENABLE_IT(pUsart, UART_IT_RXNE);
-
     // Enable USART
     __HAL_UART_ENABLE(pUsart);
+    HAL_UART_Receive_IT(pUsart, &c, 1);
 }
 
 
@@ -85,7 +79,7 @@ Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c) {
     else {
         while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET) {
         }
-		USART_SendData(usart, c);
+        HAL_UART_Transmit(usart, &c, 1, 0);
     }
 }
 

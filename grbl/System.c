@@ -30,6 +30,7 @@
 #include "System.h"
 #include "ToolChange.h"
 #include "System32.h"
+#include "../grbl/util.h"
 
 
 void System_Init(void)
@@ -62,9 +63,9 @@ uint8_t System_GetControlState(void)
 {
 	uint8_t control_state = 0;
     uint8_t pin = ((GPIO_ReadInputDataBit(GPIO_CTRL_RST_PORT, GPIO_CTRL_RST_PIN)<<CONTROL_RESET_BIT) |
-                    (GPIO_ReadInputDataBit(GPIO_CTRL_FEED_PORT, GPIO_CTRL_FEED_PIN)<<CONTROL_FEED_HOLD_BIT) |
-                    (GPIO_ReadInputDataBit(GPIO_CTRL_START_PORT, GPIO_CTRL_START_PIN)<<CONTROL_CYCLE_START_BIT) |
-                    (GPIO_ReadInputDataBit(GPIO_DOOR_PORT, GPIO_DOOR_PIN)<<CONTROL_SAFETY_DOOR_BIT));
+                   (GPIO_ReadInputDataBit(GPIO_CTRL_FEED_PORT, GPIO_CTRL_FEED_PIN)<<CONTROL_FEED_HOLD_BIT) |
+                   (GPIO_ReadInputDataBit(GPIO_CTRL_START_PORT, GPIO_CTRL_START_PIN)<<CONTROL_CYCLE_START_BIT) |
+                   (GPIO_ReadInputDataBit(GPIO_DOOR_PORT, GPIO_DOOR_PIN)<<CONTROL_SAFETY_DOOR_BIT));
 
 	// Invert control pins if necessary
 	//pin ^= CONTROL_MASK & settings.system_flags;
@@ -175,7 +176,6 @@ uint8_t System_ExecuteLine(char *line)
 			return STATUS_INVALID_STATEMENT;
 		}
 		return GC_ExecuteLine(line); // NOTE: $J= is ignored inside g-code parser and used to detect jog motions.
-		break;
 
 	case '$':
 	case 'G':
