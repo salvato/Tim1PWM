@@ -22,60 +22,40 @@
 #include "Nvm.h"
 #include "Config.h"
 #include "eeprom.h"
-#include "M24C0X.h"
 
 
-void Nvm_Init(void)
-{
-#ifdef USE_EXT_EEPROM
-	M24C0X_Init();
-#else
+void
+Nvm_Init(void) {
 	EE_Init();
-#endif
 }
 
-uint8_t Nvm_ReadByte(uint16_t Address)
-{
-#ifdef USE_EXT_EEPROM
-	return M24C0X_ReadByte(Address);
-#else
+
+uint8_t
+Nvm_ReadByte(uint16_t Address) {
 	return EE_ReadByte(Address);
-#endif
 }
 
-void Nvm_WriteByte(uint16_t Address, uint8_t Data)
-{
-#ifdef USE_EXT_EEPROM
-	M24C0X_WriteByte(Address, Data);
-#else
+
+void
+Nvm_WriteByte(uint16_t Address, uint8_t Data) {
 	EE_WriteByte(Address, Data);
-#endif
 }
 
-uint8_t Nvm_Read(uint8_t *DataOut, uint16_t Address, uint16_t size)
-{
-#ifdef USE_EXT_EEPROM
-	return M24C0X_ReadByteArray(Address, DataOut, size);
-#else
+
+uint8_t
+Nvm_Read(uint8_t *DataOut, uint16_t Address, uint16_t size) {
 	return EE_ReadByteArray(DataOut, Address, size);
-#endif
 }
 
-uint8_t Nvm_Write(uint16_t Address, uint8_t *DataIn, uint16_t size)
-{
-#ifdef USE_EXT_EEPROM
-	return M24C0X_WriteByteArray(Address, DataIn, size);
-#else
+
+uint8_t
+Nvm_Write(uint16_t Address, uint8_t *DataIn, uint16_t size) {
 	EE_WriteByteArray(Address, DataIn, size);
 	return 0;
-#endif
 }
 
-void Nvm_Update(void)
-{
-#ifdef USE_EXT_EEPROM
-	// Do nothing
-#else
+
+void
+Nvm_Update(void) {
 	EE_Program();
-#endif
 }

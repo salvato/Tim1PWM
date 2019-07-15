@@ -43,10 +43,6 @@
 //#define BAUD_RATE	230400
 
 
-// Uncomment to use external I2C EEPROM
-//#define USE_EXT_EEPROM
-
-
 // Define realtime command special characters. These characters are 'picked-off' directly from the
 // serial read data stream and are not passed to the grbl line execution parser. Select characters
 // that do not and must not exist in the streamed g-code program. ASCII control characters may be

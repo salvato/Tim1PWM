@@ -22,7 +22,7 @@
 #include "Probe.h"
 #include "Settings.h"
 #include "System.h"
-#include "GPIO.h"
+#include "gpio.h"
 
 
 // Inverts the probe pin state depending on user settings and probing cycle mode.

@@ -2573,8 +2573,6 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c
 Inc/FIFO_USART.h
-Inc/I2C.h
-Inc/M24C0X.h
 Inc/Platform.h
 Inc/Print.h
 Inc/Print.h
@@ -2617,8 +2615,6 @@ Libraries/GrIP/GrIP.c
 Libraries/GrIP/GrIP.h
 Makefile
 Src/FIFO_USART.c
-Src/I2C.c
-Src/M24C0X.c
 Src/Print.c
 Src/Print.c
 Src/Print.c

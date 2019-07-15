@@ -71,18 +71,7 @@ Putc(const unsigned char c) {
 
 void
 Print_Flush(void) {
-#ifdef ETH_IF
-    Pdu_t data;
-
-    data.Data = (uint8_t*)buf;
-    data.Length = buf_idx;
-
-    uint8_t ret = GrIP_Transmit(MSG_DATA_NO_RESPONSE, 0, &data);
-    (void)ret;  // TODO: Handle transmit error
-#else
     Usart_Write(STDOUT, false, buf, (uint8_t)buf_idx);
-#endif
-
     memset(buf, 0, 512);
     buf_idx = 0;
 }

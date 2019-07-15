@@ -180,17 +180,6 @@ void
 GPIO_InitSystem(void) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-#ifdef ETH_IF
-    // W5500 Reset Pin
-    GPIO_InitStructure.Pin = GPIO_PIN_15;
-    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_InitStructure.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
-#endif
-
     // GPIO Configuration (GPIO PortA):
     // Arduino pin#                   A0                   A1                   A4
     GPIO_InitStructure.Pin = GPIO_CTRL_RST_PIN | GPIO_CTRL_FEED_PIN | GPIO_CTRL_START_PIN;
