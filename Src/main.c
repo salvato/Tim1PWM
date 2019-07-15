@@ -44,7 +44,7 @@ main(void) {
     SystemClock_Config();
 
     // Init formatted output
-    Print_Init();   // Usart_Init(huart2, BAUD_RATE);
+    Print_Init(&huart2);   // Usart_Init(huart2, BAUD_RATE);
 
     System_Init();  // GPIO_InitGPIO(GPIO_SYSTEM);
     Stepper_Init(); // Configure step and direction interface pins & Timer9 (Used for Stepper Interrupt)

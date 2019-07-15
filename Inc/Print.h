@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 
-void Print_Init(void);
+void Print_Init(UART_HandleTypeDef* pUart);
 int Printf(const unsigned char *str, ...);
 void PrintFloat(float n, uint8_t decimal_places);
 int8_t Getc(unsigned char *c);

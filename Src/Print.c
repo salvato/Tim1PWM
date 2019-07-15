@@ -18,8 +18,8 @@ static uint16_t buf_idx = 0;
 
 
 void
-Print_Init(void) {
-    Usart_Init(&huart2, BAUD_RATE);
+Print_Init(UART_HandleTypeDef* pUart) {
+    Usart_Init(pUart, BAUD_RATE);
 }
 
 

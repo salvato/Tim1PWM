@@ -1,33 +1,12 @@
-/*
-  USART.c - USART implementation
-  Part of STM32F4_HAL
-
-  Copyright (c)	2017 Patrick F.
-
-  STM32F4_HAL is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  STM32F4_HAL is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  You should have received a copy of the GNU General Public License
-  along with STM32F4_HAL.  If not, see <http://www.gnu.org/licenses/>.
-*/
-#include <stdio.h>
 #include "usart.h"
 #include "main.h"
 #include "fifo_usart.h"
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_gpio.h"
-#include "stm32f4xx_hal_rcc.h"
 #include "stm32f4xx_hal_uart.h"
-//#include "misc.h"
 
 
 static uint8_t FifoInit = 0;
-uint8_t c;
+
 
 void
 Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
@@ -35,8 +14,8 @@ Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
 		FifoUsart_Init();
 		FifoInit = 1;
 	}
-
-    pUsart->Instance = USART2;
+    // USART configuration
+    pUsart->Instance          = USART2;
     pUsart->Init.BaudRate     = baud;
     pUsart->Init.WordLength   = UART_WORDLENGTH_8B;
     pUsart->Init.StopBits     = UART_STOPBITS_1;
@@ -44,16 +23,13 @@ Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
     pUsart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
     pUsart->Init.Mode         = UART_MODE_TX_RX;
     pUsart->Init.OverSampling = UART_OVERSAMPLING_16;
-
-    // USART configuration
-    if (HAL_UART_Init(pUsart) != HAL_OK) {
+    if (HAL_UART_Init(pUsart) != HAL_OK) {// Calls also HAL_UART_MspInit()
         Error_Handler();
     }
-    // Enable the Receive interrupt
-    __HAL_UART_ENABLE_IT(pUsart, UART_IT_RXNE);
     // Enable USART
     __HAL_UART_ENABLE(pUsart);
-    HAL_UART_Receive_IT(pUsart, &c, 1);
+    // Enable the Receive interrupt
+    __HAL_UART_ENABLE_IT(pUsart, UART_IT_RXNE);
 }
 
 
