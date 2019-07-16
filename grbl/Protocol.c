@@ -84,7 +84,6 @@ Protocol_MainLoop(void) {
 			BIT_TRUE(sys_rt_exec_state, EXEC_SAFETY_DOOR);
 			Protocol_ExecuteRealtime(); // Enter safety door mode. Should return as IDLE state.
 		}
-
 		// All systems go!
         System_ExecuteStartup(line); // Execute startup script (if stored !!!).
 	}
@@ -97,7 +96,6 @@ Protocol_MainLoop(void) {
 	uint8_t line_flags = 0;
 	uint8_t char_counter = 0;
 	char c;
-
 
 	for(;;) {
         // Process one line of incoming serial data, as the data becomes available.

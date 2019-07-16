@@ -45,11 +45,9 @@ main(void) {
 
     // Init formatted output
     Print_Init(&huart2);   // Usart_Init(huart2, BAUD_RATE);
-
     System_Init();  // GPIO_InitGPIO(GPIO_SYSTEM);
     Stepper_Init(); // Configure step and direction interface pins & Timer9 (Used for Stepper Interrupt)
     Settings_Init();// Initialize the config subsystem
-
     System_ResetPosition();// Clear machine position.
     if(BIT_IS_TRUE(settings.flags, BITFLAG_HOMING_ENABLE)) {
         sys.state = STATE_ALARM;
