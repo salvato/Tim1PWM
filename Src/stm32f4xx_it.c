@@ -54,10 +54,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
 volatile uint8_t DebounceCounterControl = 0;
 volatile uint8_t DebounceCounterLimits = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,7 +63,6 @@ volatile uint8_t DebounceCounterLimits = 0;
 
 extern void Limit_PinChangeISR(void);
 extern void System_PinChangeISR(void);
-
 
 // Counter for milliseconds
 static volatile uint32_t gMillis = 0;
@@ -91,7 +88,7 @@ millis(void) {
 
 
 void
-ProcessReceive(unsigned char c) {
+ProcessReceive(char c) {
     // Pick off realtime command characters directly from the serial stream. These characters are
     // not passed into the main buffer, but these set system state flag bits for realtime execution.
     switch(c)
@@ -269,7 +266,6 @@ PendSV_Handler(void) {
 void
 SysTick_Handler(void) {
     /* USER CODE BEGIN SysTick_IRQn 0 */
-
     /* USER CODE END SysTick_IRQn 0 */
     HAL_IncTick();
     /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -286,7 +282,6 @@ SysTick_Handler(void) {
             Limit_PinChangeISR();
         }
     }
-
     uint8_t controls = System_GetControlState();
     if(controls) {
         // System control
@@ -295,14 +290,12 @@ SysTick_Handler(void) {
             System_PinChangeISR();
         }
     }
-
     if(DebounceCounterLimits && !limits) {
         DebounceCounterLimits--;
     }
     if(DebounceCounterControl && !controls) {
         DebounceCounterControl--;
     }
-
     gMillis++;
     /* USER CODE END SysTick_IRQn 1 */
 }
@@ -344,10 +337,12 @@ USART2_IRQHandler(void) {
         unsigned char c;
         HAL_UART_Receive(&huart2, &c, 1, 0);
         ProcessReceive(c);
+        // Enable the Receive interrupt
+        __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
     }
 
     if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_TXE) != RESET) {
-        unsigned char c;
+        char c;
         if(FifoUsart_Get(USART2_NUM, USART_DIR_TX, &c) == 0) {
             // Write one byte to the transmit data register
             while(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET);

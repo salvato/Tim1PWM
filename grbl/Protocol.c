@@ -32,6 +32,7 @@
 #include "MotionControl.h"
 #include "Platform.h"
 #include "Print.h"
+#include "usart.h"
 
 
 // Line buffer size from the serial input stream to be executed.
@@ -98,6 +99,9 @@ Protocol_MainLoop(void) {
 	char c;
 
 	for(;;) {
+        // Enable the Receive interrupt
+        __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+
         // Process one line of incoming serial data, as the data becomes available.
         // Performs an initial filtering by removing spaces and comments and capitalizing all letters.
 		while(Getc(&c) == 0) {

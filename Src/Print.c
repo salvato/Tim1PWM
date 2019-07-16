@@ -13,7 +13,7 @@
 #define MAX_BUFFER_SIZE     128
 
 
-static unsigned char buf[512] = {0};
+static char buf[512] = {0};
 static uint16_t buf_idx = 0;
 
 
@@ -24,33 +24,28 @@ Print_Init(UART_HandleTypeDef* pUart) {
 
 
 int
-Printf(const unsigned char *str, ...) {
-    unsigned char buffer[MAX_BUFFER_SIZE];
+Printf(const char *str, ...) {
+    char buffer[MAX_BUFFER_SIZE];
 	uint8_t idx = 0;
 
 	va_list vl;
 	va_start(vl, str);
     int i = vsnprintf(buffer, MAX_BUFFER_SIZE, str, vl);
-
     if(i > MAX_BUFFER_SIZE) {
         i = MAX_BUFFER_SIZE;
     }
-
-
     for(uint8_t j = 0; j < i; j++) {
         buf[buf_idx++] = buffer[j];
     }
-    Usart_Write(&huart2, false, buffer, i);
-
+    // Usart_Write(&huart2, false, buffer, i);
     va_end(vl);
-
     // Return number of sent bytes
 	return idx;
 }
 
 
 int8_t
-Getc(unsigned char *c) {
+Getc(char *c) {
 	if(FifoUsart_Get(STDOUT_NUM, USART_DIR_RX, c) == 0) {
 		return 0;
 	}
@@ -59,9 +54,9 @@ Getc(unsigned char *c) {
 
 
 int
-Putc(const unsigned char c) {
+Putc(const char c) {
     buf[buf_idx++] = c;
-    Usart_Put(&huart2, false, c);
+//    Usart_Put(&huart2, false, c);
 	return 0;
 }
 

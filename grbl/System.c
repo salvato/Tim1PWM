@@ -33,14 +33,14 @@
 #include "../grbl/util.h"
 
 
-void System_Init(void)
-{
+void
+System_Init(void) {
 	GPIO_InitGPIO(GPIO_SYSTEM);
 }
 
 
-void System_Clear(void)
-{
+void
+System_Clear(void) {
 	memset(&sys, 0, sizeof(System_t)); // Clear system struct variable.
 
 	sys.f_override = DEFAULT_FEED_OVERRIDE;  // Set to 100%
@@ -49,8 +49,8 @@ void System_Clear(void)
 }
 
 
-void System_ResetPosition(void)
-{
+void
+System_ResetPosition(void) {
 	// Clear machine position.
 	memset(sys_position, 0 , sizeof(sys_position));
 }
@@ -59,10 +59,11 @@ void System_ResetPosition(void)
 // Returns control pin state as a uint8 bitfield. Each bit indicates the input pin state, where
 // triggered is 1 and not triggered is 0. Invert mask is applied. Bitfield organization is
 // defined by the CONTROL_PIN_INDEX in the header file.
-uint8_t System_GetControlState(void)
-{
+uint8_t
+System_GetControlState(void) {
 	uint8_t control_state = 0;
-    uint8_t pin = ((GPIO_ReadInputDataBit(GPIO_CTRL_RST_PORT, GPIO_CTRL_RST_PIN)<<CONTROL_RESET_BIT) |
+    uint8_t pin =0xFF &
+                  ((GPIO_ReadInputDataBit(GPIO_CTRL_RST_PORT, GPIO_CTRL_RST_PIN)<<CONTROL_RESET_BIT) |
                    (GPIO_ReadInputDataBit(GPIO_CTRL_FEED_PORT, GPIO_CTRL_FEED_PIN)<<CONTROL_FEED_HOLD_BIT) |
                    (GPIO_ReadInputDataBit(GPIO_CTRL_START_PORT, GPIO_CTRL_START_PIN)<<CONTROL_CYCLE_START_BIT) |
                    (GPIO_ReadInputDataBit(GPIO_DOOR_PORT, GPIO_DOOR_PIN)<<CONTROL_SAFETY_DOOR_BIT));
@@ -94,8 +95,8 @@ uint8_t System_GetControlState(void)
 // only the realtime command execute variable to have the main program execute these when
 // its ready. This works exactly like the character-based realtime commands when picked off
 // directly from the incoming serial data stream.
-void System_PinChangeISR(void)
-{
+void
+System_PinChangeISR(void) {
 	uint8_t pin = System_GetControlState();
 
 	if(pin) {
@@ -116,15 +117,15 @@ void System_PinChangeISR(void)
 
 
 // Returns if safety door is ajar(T) or closed(F), based on pin state.
-uint8_t System_CheckSafetyDoorAjar(void)
-{
+uint8_t
+System_CheckSafetyDoorAjar(void) {
     return (System_GetControlState() & CONTROL_PIN_INDEX_SAFETY_DOOR);
 }
 
 
 // Executes user startup script, if stored.
-void System_ExecuteStartup(char *line)
-{
+void
+System_ExecuteStartup(char *line) {
 #if (N_STARTUP_LINE > 0)
 	uint8_t n;
 
@@ -155,8 +156,8 @@ void System_ExecuteStartup(char *line)
 // the lines that are processed afterward, not necessarily real-time during a cycle,
 // since there are motions already stored in the buffer. However, this 'lag' should not
 // be an issue, since these commands are not typically used during a cycle.
-uint8_t System_ExecuteLine(char *line)
-{
+uint8_t
+System_ExecuteLine(char *line) {
 	uint8_t char_counter = 1;
 	uint8_t helper_var = 0; // Helper variable
 	float parameter, value;
@@ -241,37 +242,29 @@ uint8_t System_ExecuteLine(char *line)
         sys.state = STATE_IDLE;
 
 		// Check if machine is homed and tls enabled
-		if(settings.tool_change == 2)
-        {
-            if(sys.is_homed)
-            {
-                if(settings.tls_valid)
-                {
+        if(settings.tool_change == 2) {
+            if(sys.is_homed) {
+                if(settings.tls_valid) {
                     TC_ProbeTLS();
                 }
-                else
-                {
+                else {
                     return STATUS_TLS_NOT_SET;
                 }
             }
-            else
-            {
+            else {
                 return STATUS_MACHINE_NOT_HOMED;
             }
         }
-        else
-        {
+        else {
             return STATUS_SETTING_DISABLED;
         }
         break;
 
     case 'P':
-        if(sys.is_homed)
-        {
+        if(sys.is_homed) {
             Settings_StoreTlsPosition();
         }
-        else
-        {
+        else {
             return STATUS_MACHINE_NOT_HOMED;
         }
 
@@ -468,8 +461,8 @@ uint8_t System_ExecuteLine(char *line)
 
 
 
-void System_FlagWcoChange(void)
-{
+void
+System_FlagWcoChange(void) {
 #ifdef FORCE_BUFFER_SYNC_DURING_WCO_CHANGE
     Protocol_BufferSynchronize();
 #endif
@@ -480,8 +473,8 @@ void System_FlagWcoChange(void)
 // Returns machine position of axis 'idx'. Must be sent a 'step' array.
 // NOTE: If motor steps and machine position are not in the same coordinate frame, this function
 //   serves as a central place to compute the transformation.
-float System_ConvertAxisSteps2Mpos(const int32_t *steps, const uint8_t idx)
-{
+float
+System_ConvertAxisSteps2Mpos(const int32_t *steps, const uint8_t idx) {
 	float pos;
 
 #ifdef COREXY
@@ -502,35 +495,34 @@ float System_ConvertAxisSteps2Mpos(const int32_t *steps, const uint8_t idx)
 }
 
 
-void System_ConvertArraySteps2Mpos(float *position, const int32_t *steps)
-{
+void
+System_ConvertArraySteps2Mpos(float *position, const int32_t *steps) {
 	uint8_t idx;
-
 	for(idx = 0; idx < N_AXIS; idx++) {
 		position[idx] = System_ConvertAxisSteps2Mpos(steps, idx);
 	}
-
 	return;
 }
 
 
 // CoreXY calculation only. Returns x or y-axis "steps" based on CoreXY motor steps.
 #ifdef COREXY
-int32_t system_convert_corexy_to_x_axis_steps(int32_t *steps)
-{
+int32_t
+system_convert_corexy_to_x_axis_steps(int32_t *steps) {
     return ((steps[A_MOTOR] + steps[B_MOTOR])/2);
 }
 
-int32_t system_convert_corexy_to_y_axis_steps(int32_t *steps)
-{
+
+int32_t
+system_convert_corexy_to_y_axis_steps(int32_t *steps) {
     return ((steps[A_MOTOR] - steps[B_MOTOR])/2);
 }
 #endif
 
 
 // Checks and reports if target array exceeds machine travel limits.
-uint8_t System_CheckTravelLimits(float *target)
-{
+uint8_t
+System_CheckTravelLimits(float *target) {
 	uint8_t idx;
 
 	for(idx = 0; idx < N_AXIS; idx++) {
@@ -560,89 +552,73 @@ uint8_t System_CheckTravelLimits(float *target)
 
 
 // Special handlers for setting and clearing Grbl's real-time execution flags.
-void System_SetExecStateFlag(uint16_t mask)
-{
+void
+System_SetExecStateFlag(uint16_t mask) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_state |= (mask);
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_ClearExecStateFlag(uint16_t mask)
-{
+void
+System_ClearExecStateFlag(uint16_t mask) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_state &= ~(mask);
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_SetExecAlarm(uint8_t code)
-{
+void
+System_SetExecAlarm(uint8_t code) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_alarm = code;
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_ClearExecAlarm(void)
-{
+void
+System_ClearExecAlarm(void) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_alarm = 0;
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_SetExecMotionOverrideFlag(uint8_t mask)
-{
+void
+System_SetExecMotionOverrideFlag(uint8_t mask) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_motion_override |= (mask);
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_SetExecAccessoryOverrideFlag(uint8_t mask)
-{
+void
+System_SetExecAccessoryOverrideFlag(uint8_t mask) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_accessory_override |= (mask);
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_ClearExecMotionOverride(void)
-{
+void
+System_ClearExecMotionOverride(void) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_motion_override = 0;
-
 	__set_PRIMASK(primask);
 }
 
 
-void System_ClearExecAccessoryOverrides(void)
-{
+void
+System_ClearExecAccessoryOverrides(void) {
 	uint32_t primask = __get_PRIMASK();
 	__disable_irq();
-
 	sys_rt_exec_accessory_override = 0;
-
 	__set_PRIMASK(primask);
 }

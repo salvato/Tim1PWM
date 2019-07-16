@@ -10,18 +10,16 @@ extern "C" {
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
 
-
 void Print_Init(UART_HandleTypeDef* pUart);
-int Printf(const unsigned char *str, ...);
+int Printf(const char *str, ...);
 void PrintFloat(float n, uint8_t decimal_places);
-int8_t Getc(unsigned char *c);
-int Putc(const unsigned char c);
+int8_t Getc(char *c);
+int Putc(const char c);
 
 void Print_Flush(void);
 
 void PrintFloat_CoordValue(float n);
 void PrintFloat_RateValue(float n);
-
 
 #ifdef __cplusplus
 }

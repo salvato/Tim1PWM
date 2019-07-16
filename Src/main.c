@@ -19,6 +19,7 @@
 
 
 static void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 
 TIM_HandleTypeDef htim1;
@@ -40,12 +41,22 @@ volatile uint8_t sys_rt_exec_accessory_override; // Global realtime executor bit
 
 int
 main(void) {
+//    HAL_Init() is used to initialize the HAL Library; it must be the first
+//      *         instruction to be executed in the main program, it performs the following:
+//      *           Configure the Flash prefetch, instruction and Data caches.
+//      *           Configures the SysTick to generate an interrupt each 1 millisecond,
+//      *           which is clocked by the HSI (at this stage, the clock is not yet
+//      *           configured and thus the system is running from the internal HSI at 16 MHz).
+//      *           Set NVIC Group Priority to 4.
+//      *           Calls the HAL_MspInit() callback function defined in user file
+//      *           "stm32f4xx_hal_msp.c" to do the global low level hardware initialization
     HAL_Init();
     SystemClock_Config();
+    MX_GPIO_Init();// Initialize at first some peripherals for error signaling
 
     // Init formatted output
-    Print_Init(&huart2);   // Usart_Init(huart2, BAUD_RATE);
-    System_Init();  // GPIO_InitGPIO(GPIO_SYSTEM);
+    Print_Init(&huart2);   // Initialize USART2 & enable the Receive interrupt
+    System_Init();  // Initialize Some Control Inputs
     Stepper_Init(); // Configure step and direction interface pins & Timer9 (Used for Stepper Interrupt)
     Settings_Init();// Initialize the config subsystem
     System_ResetPosition();// Clear machine position.
@@ -147,6 +158,34 @@ SystemClock_Config(void) {
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
     // SysTick_IRQn interrupt configuration
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+
+static void
+MX_GPIO_Init(void) {
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // GPIO Ports Clock Enable
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOH_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    // Configure GPIO pin Output Level
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+    // Configure GPIO pin : B1_Pin
+    GPIO_InitStruct.Pin = B1_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+    // Configure GPIO pin : LD2_Pin
+    GPIO_InitStruct.Pin = LD2_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 }
 
 
