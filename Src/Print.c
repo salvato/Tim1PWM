@@ -54,7 +54,6 @@ Getc(unsigned char *c) {
 	if(FifoUsart_Get(STDOUT_NUM, USART_DIR_RX, c) == 0) {
 		return 0;
 	}
-
 	return -1;
 }
 
@@ -63,7 +62,6 @@ int
 Putc(const unsigned char c) {
     buf[buf_idx++] = c;
     Usart_Put(&huart2, false, c);
-
 	return 0;
 }
 
