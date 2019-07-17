@@ -63,7 +63,7 @@ Putc(const char c) {
 
 void
 Print_Flush(void) {
-    Usart_Write(&huart2, false, buf, (uint8_t)buf_idx);
+    Usart_Write(&huart2, false, (uint8_t*)buf, (uint8_t)buf_idx);
     memset(buf, 0, 512);
     buf_idx = 0;
 }
@@ -116,7 +116,7 @@ PrintFloat(float n, uint8_t decimal_places) {
 		if(i == decimal_places) {
 			Putc('.');
 		} // Insert decimal point in right place.
-		Putc(buf[i-1]);
+        Putc((char)buf[i-1]);
 	}
 }
 

@@ -56,6 +56,7 @@
 /* USER CODE BEGIN PV */
 volatile uint8_t DebounceCounterControl = 0;
 volatile uint8_t DebounceCounterLimits = 0;
+volatile uint32_t gMillis = 0;// Counter for milliseconds
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,8 +65,7 @@ volatile uint8_t DebounceCounterLimits = 0;
 extern void Limit_PinChangeISR(void);
 extern void System_PinChangeISR(void);
 
-// Counter for milliseconds
-static volatile uint32_t gMillis = 0;
+
 
 /* USER CODE END PFP */
 
@@ -75,11 +75,10 @@ static volatile uint32_t gMillis = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+/* USER CODE BEGIN EV */
 extern TIM_HandleTypeDef htim9;
 extern UART_HandleTypeDef huart2;
-
-
-/* USER CODE BEGIN EV */
+/* USER CODE END EV */
 
 uint32_t
 millis(void) {
@@ -88,7 +87,7 @@ millis(void) {
 
 
 void
-ProcessReceive(char c) {
+ProcessReceive(unsigned char c) {
     // Pick off realtime command characters directly from the serial stream. These characters are
     // not passed into the main buffer, but these set system state flag bits for realtime execution.
     switch(c)
@@ -101,7 +100,7 @@ ProcessReceive(char c) {
     case CMD_STEPPER_DISABLE:     Stepper_Disable(1); break; // Set as true
 
     default:
-        if(c > 0x7F) { // Real-time control characters are extended ACSII only.
+        if(c > 0x7F) { // Real-time control characters are extended ASCII only.
             switch(c)
             {
             case CMD_SAFETY_DOOR: System_SetExecStateFlag(EXEC_SAFETY_DOOR); break; // Set as true
@@ -134,12 +133,11 @@ ProcessReceive(char c) {
         }
         else {
             // Write character to buffer
-            FifoUsart_Insert(USART2_NUM, USART_DIR_RX, c);
+            FifoUsart_Insert(USART2_NUM, USART_DIR_RX, (char)c);
         }
     }
 }
 
-/* USER CODE END EV */
 
 /******************************************************************************/
 /*           Cortex-M4 Processor Interruption and Exception Handlers          */ 
@@ -346,7 +344,7 @@ USART2_IRQHandler(void) {
         if(FifoUsart_Get(USART2_NUM, USART_DIR_TX, &c) == 0) {
             // Write one byte to the transmit data register
             while(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET);
-            HAL_UART_Transmit(&huart2, &c, 1, 0);
+            HAL_UART_Transmit(&huart2, (uint8_t*)&c, 1, 0);
         }
         else {
             // Nothing to transmit - disable interrupt

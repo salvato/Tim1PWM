@@ -47,6 +47,7 @@
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
+/* USER CODE BEGIN EFP */
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);
@@ -56,12 +57,11 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
-/* USER CODE BEGIN EFP */
+/* USER CODE END EFP */
 
 extern volatile uint8_t DebounceCounterControl;
 extern volatile uint8_t DebounceCounterLimits;
-
-/* USER CODE END EFP */
+extern volatile uint32_t gMillis;
 
 #ifdef __cplusplus
 }
