@@ -15,18 +15,9 @@
 
 
 //---- USART ----//
-// Number of used USARTs on this device
-//#define USART_NUM			2
-
-// Numerate available USARTs in ascending order
-//#define USART1_NUM			0
-//#define USART2_NUM			1
-//#define USART6_NUM			2
 
 // USART used for Printf(...)
 #define STDOUT				USART2
-#define STDOUT_NUM			USART2_NUM
-//#define STDOUT_BAUD			115200
 
 
 //---- Defines ----//

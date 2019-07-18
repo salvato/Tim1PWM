@@ -707,7 +707,7 @@ Report_RealtimeStatus(void) {
 		Printf("|Bf:");
 		Printf("%d", Planner_GetBlockBufferAvailable());
 		Putc(',');
-		Printf("%d", FifoUsart_Available(STDOUT_NUM));
+        Printf("%d", FifoUsart_Available());
 	}
 #endif
 

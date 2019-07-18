@@ -133,7 +133,7 @@ ProcessReceive(unsigned char c) {
         }
         else {
             // Write character to buffer
-            FifoUsart_Insert(USART2_NUM, USART_DIR_RX, (char)c);
+            FifoUsart_Insert(USART_DIR_RX, (char)c);
         }
     }
 }
@@ -331,17 +331,15 @@ TIM1_BRK_TIM9_IRQHandler(void) {
 void
 USART2_IRQHandler(void) {
     if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE) != RESET) {
-        // Read one byte from the receive data register
+        // The receive data register is not empty: Read one byte from it
         unsigned char c;
         HAL_UART_Receive(&huart2, &c, 1, 0);
         ProcessReceive(c);
-        // Enable the Receive interrupt
-        __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
     }
 
     if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_TXE) != RESET) {
         char c;
-        if(FifoUsart_Get(USART2_NUM, USART_DIR_TX, &c) == 0) {
+        if(FifoUsart_Get(USART_DIR_TX, &c) == 0) {
             // Write one byte to the transmit data register
             while(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET);
             HAL_UART_Transmit(&huart2, (uint8_t*)&c, 1, 0);

@@ -37,7 +37,6 @@ Printf(const char *str, ...) {
     for(uint8_t j = 0; j < i; j++) {
         buf[buf_idx++] = buffer[j];
     }
-    // Usart_Write(&huart2, false, buffer, i);
     va_end(vl);
     // Return number of sent bytes
 	return idx;
@@ -46,7 +45,7 @@ Printf(const char *str, ...) {
 
 int8_t
 Getc(char *c) {
-	if(FifoUsart_Get(STDOUT_NUM, USART_DIR_RX, c) == 0) {
+    if(FifoUsart_Get(USART_DIR_RX, c) == 0) {
 		return 0;
 	}
 	return -1;
@@ -56,7 +55,6 @@ Getc(char *c) {
 int
 Putc(const char c) {
     buf[buf_idx++] = c;
-//    Usart_Put(&huart2, false, c);
 	return 0;
 }
 
@@ -64,8 +62,10 @@ Putc(const char c) {
 void
 Print_Flush(void) {
     Usart_Write(&huart2, false, (uint8_t*)buf, (uint8_t)buf_idx);
-    memset(buf, 0, 512);
+    memset(buf, 0, sizeof(buf));
     buf_idx = 0;
+    // Enable the Receive interrupt
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 }
 
 

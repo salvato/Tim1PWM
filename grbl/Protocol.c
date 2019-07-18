@@ -34,6 +34,7 @@
 #include "Print.h"
 #include "usart.h"
 
+#define REPORT_ECHO_LINE_RECEIVED
 
 // Line buffer size from the serial input stream to be executed.
 // NOTE: Not a problem except for extreme cases, but the line buffer size can be too small
@@ -98,26 +99,21 @@ Protocol_MainLoop(void) {
 	uint8_t char_counter = 0;
 	char c;
 
-	for(;;) {
-        // Enable the Receive interrupt
-        __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
-
+    // Enable the Receive interrupt
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+    for(;;) {
         // Process one line of incoming serial data, as the data becomes available.
         // Performs an initial filtering by removing spaces and comments and capitalizing all letters.
 		while(Getc(&c) == 0) {
 			if((c == '\n') || (c == '\r')) { // End of line reached
-				Protocol_ExecuteRealtime(); // Runtime command check point.
-
+                line[char_counter] = 0; // Set string termination character.
+#ifdef REPORT_ECHO_LINE_RECEIVED
+                Report_EchoLineReceived(line);
+#endif
+                Protocol_ExecuteRealtime(); // Runtime command check point.
                 if(sys.abort) {// Bail to calling function upon system abort
 					return;
 				}
-
-				line[char_counter] = 0; // Set string termination character.
-
-#ifdef REPORT_ECHO_LINE_RECEIVED
-				Report_EchoLineReceived(line);
-#endif
-
 				// Direct and execute one line of formatted input, and report status of execution.
 				if(line_flags & LINE_FLAG_OVERFLOW) {
 					// Report line overflow error.
@@ -142,7 +138,7 @@ Protocol_MainLoop(void) {
                     //-----------------------------------------
 				}
 
-				// Reset tracking data for next line.
+                // Reset tracking data for next line.
 				line_flags = 0;
 				char_counter = 0;
             }// if End of line reached
@@ -191,7 +187,7 @@ Protocol_MainLoop(void) {
 						line[char_counter++] = c-'a'+'A';
 					}
 					else {
-						line[char_counter++] = c;
+                        line[char_counter++] = c;
 					}
 				}
 			}
@@ -208,8 +204,6 @@ Protocol_MainLoop(void) {
 			return;
 		}
     }// for(;;) {
-
-    //return; /* Never reached */
 }// Protocol_MainLoop()
 
 

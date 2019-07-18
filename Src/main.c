@@ -56,6 +56,8 @@ main(void) {
 
     // Init formatted output
     Print_Init(&huart2);   // Initialize USART2 & enable the Receive interrupt
+    Report_InitMessage();
+
     System_Init();  // Initialize Some Control Inputs
     Stepper_Init(); // Configure step and direction interface pins & Timer9 (Used for Stepper Interrupt)
     Settings_Init();// Initialize the config subsystem

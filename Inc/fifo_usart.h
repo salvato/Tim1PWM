@@ -33,9 +33,9 @@ extern "C" {
 
 
 void FifoUsart_Init(void);
-int8_t FifoUsart_Insert(uint8_t usart, uint8_t direction, char ch);
-int8_t FifoUsart_Get(uint8_t usart, uint8_t direction, char *ch);
-uint32_t FifoUsart_Available(uint8_t usart);
+int8_t FifoUsart_Insert(uint8_t direction, char ch);
+int8_t FifoUsart_Get(uint8_t direction, char *ch);
+uint32_t FifoUsart_Available();
 
 
 #ifdef __cplusplus

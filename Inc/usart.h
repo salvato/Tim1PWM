@@ -5,17 +5,8 @@
 #include "stm32f4xx_hal_uart.h"
 
 
-// Number of USARTs on this device
-#define USART_NUM			3
-
-// Numerate available USARTs in ascending order
-#define USART1_NUM			0
-#define USART2_NUM			1
-#define USART6_NUM			2
-
 // Usart used for Printf(...)
 #define STDOUT				USART2
-#define STDOUT_NUM			USART2_NUM
 
 // Direction definitions
 #define USART_DIR_RX		0

@@ -35,20 +35,8 @@ Usart_Init(UART_HandleTypeDef *pUsart, uint32_t baud) {
 
 void
 Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c) {
-    uint8_t num = 0;
-
-    if(usart->Instance == USART1) {
-        num = USART1_NUM;
-    }
-    else if(usart->Instance == USART2) {
-        num = USART2_NUM;
-    }
-    else if(usart->Instance == USART6) {
-        num = USART6_NUM;
-    }
-
     if(buffered) {
-        FifoUsart_Insert(num, USART_DIR_TX, c);
+        FifoUsart_Insert(USART_DIR_TX, c);
         // Enable sending via interrupt
         Usart_TxInt(usart, true);
     }
@@ -63,23 +51,11 @@ Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c) {
 void
 Usart_Write(UART_HandleTypeDef *usart, bool buffered, unsigned char *data, uint8_t len) {
 	uint8_t i = 0;
-	uint8_t num = 0;
-
-    if(usart->Instance == USART1) {
-        num = USART1_NUM;
-    }
-    else if(usart->Instance == USART2) {
-        num = USART2_NUM;
-    }
-    else if(usart->Instance == USART6) {
-        num = USART6_NUM;
-    }
 
     if(buffered) {
         while(len--) {
-            FifoUsart_Insert(num, USART_DIR_TX, data[i++]);
+            FifoUsart_Insert(USART_DIR_TX, data[i++]);
         }
-
         // Enable sending via interrupt
         Usart_TxInt(usart, true);
     }
