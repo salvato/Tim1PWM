@@ -1,4 +1,5 @@
 build/
 *.creator.*
 *.creator.user
+*.creator.user.*
 Makefile
