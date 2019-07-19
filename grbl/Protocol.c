@@ -126,6 +126,7 @@ Protocol_MainLoop(void) {
 				}
 				else if(line[0] == '$') {
 					// Grbl '$' system command
+                    Report_StartupLine(254, line);
 					Report_StatusMessage(System_ExecuteLine(line));
 				}
 				else if(sys.state & (STATE_ALARM | STATE_JOG | STATE_TOOL_CHANGE)) {
@@ -135,7 +136,8 @@ Protocol_MainLoop(void) {
 				else {
                     //-----------------------------------------
 					// Parse and execute g-code block.
-					Report_StatusMessage(GC_ExecuteLine(line));
+                    Report_StartupLine(255, line);
+                    Report_StatusMessage(GC_ExecuteLine(line));
                     //-----------------------------------------
 				}
 
@@ -191,7 +193,7 @@ Protocol_MainLoop(void) {
                         line[char_counter++] = c;
 					}
 				}
-			}
+            }// End of line not yet reached
         }// while(Getc(&c) == 0)
 
 		// If there are no more characters in the serial read buffer to be processed and executed,
@@ -264,7 +266,7 @@ Protocol_ExecuteRealtime(void) {
 // NOTE: Do not alter this unless you know exactly what you are doing!
 void
 Protocol_ExecRtSystem(void) {
-	uint8_t rt_exec; // Temp variable to avoid calling volatile multiple times.
+    uint8_t rt_exec; // Temp variable to avoid calling volatile multiple times.
 	rt_exec = sys_rt_exec_alarm; // Copy volatile sys_rt_exec_alarm.
 
 	if(rt_exec) { // Enter only if any bit flag is true
