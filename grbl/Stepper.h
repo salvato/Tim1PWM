@@ -19,9 +19,9 @@
   You should have received a copy of the GNU General Public License
   along with Grbl-Advanced.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef STEPPER_H
-#define STEPPER_H
+#pragma once
 
+#include "stdint.h"
 
 // Initialize and setup the stepper motor subsystem
 void Stepper_Init(void);
@@ -58,6 +58,3 @@ void Stepper_UpdatePlannerBlockParams(void);
 
 // Called by realtime status reporting if realtime rate reporting is enabled in config.h.
 float Stepper_GetRealtimeRate(void);
-
-
-#endif // STEPPER_H

@@ -242,6 +242,7 @@ Stepper_WakeUp(void) {
 	//st.step_outbits = step_port_invert_mask;
 	st.step_outbits = 0;
 
+    __HAL_TIM_ENABLE(&htim9);
 	// Enable Stepper Driver Interrupt
     __HAL_TIM_ENABLE_IT(&htim9, TIM_IT_UPDATE|TIM_IT_CC1);
 }

@@ -34,7 +34,7 @@
 #include "Print.h"
 #include "usart.h"
 
-#define REPORT_ECHO_LINE_RECEIVED
+//#define REPORT_ECHO_LINE_RECEIVED
 
 // Line buffer size from the serial input stream to be executed.
 // NOTE: Not a problem except for extreme cases, but the line buffer size can be too small
@@ -101,6 +101,7 @@ Protocol_MainLoop(void) {
 
     // Enable the Receive interrupt
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+
     for(;;) {
         // Process one line of incoming serial data, as the data becomes available.
         // Performs an initial filtering by removing spaces and comments and capitalizing all letters.

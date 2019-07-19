@@ -53,6 +53,7 @@ FifoUsart_Insert(uint8_t direction, char ch) {
 		return -1;
 	}
     if(QueueIn[direction] == ((QueueOut[direction] - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
+        d_printf("ERROR: Queue Full\n");
         return -1; // Queue Full
     }
     FifoQueue[direction][QueueIn[direction]] = ch;

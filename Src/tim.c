@@ -66,8 +66,8 @@ TIM9_Init(void) {
     TIM_OC_InitTypeDef     sConfigOC          = {0};
 
     htim9.Instance               = TIM9;
-    htim9.Init.Period            = 500;//0xFFFF;
-    htim9.Init.Prescaler         = 40000;//4-1;
+    htim9.Init.Period            = 0xFFFF;
+    htim9.Init.Prescaler         = 4-1;
     htim9.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
     htim9.Init.CounterMode       = TIM_COUNTERMODE_UP;
     htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;

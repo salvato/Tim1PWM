@@ -35,6 +35,7 @@
 #include "Config.h"
 #include "MotionControl.h"
 #include "Platform.h"
+#include "Report.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,18 +93,31 @@ ProcessReceive(unsigned char c) {
     // not passed into the main buffer, but these set system state flag bits for realtime execution.
     switch(c)
     {
-    case CMD_RESET:         MC_Reset(); break; // Call motion control reset routine.
-    case CMD_RESET_HARD:    NVIC_SystemReset();     // Perform hard reset
-    case CMD_STATUS_REPORT: System_SetExecStateFlag(EXEC_STATUS_REPORT);break;
-    case CMD_CYCLE_START:   System_SetExecStateFlag(EXEC_CYCLE_START); break; // Set as true
-    case CMD_FEED_HOLD:     System_SetExecStateFlag(EXEC_FEED_HOLD); break; // Set as true
-    case CMD_STEPPER_DISABLE:     Stepper_Disable(1); break; // Set as true
+    case CMD_RESET:
+        MC_Reset();
+        break; // Call motion control reset routine.
+    case CMD_RESET_HARD:
+        NVIC_SystemReset();     // Perform hard reset
+    case CMD_STATUS_REPORT:
+        System_SetExecStateFlag(EXEC_STATUS_REPORT);
+        break;
+    case CMD_CYCLE_START:
+        System_SetExecStateFlag(EXEC_CYCLE_START);
+        break; // Set as true
+    case CMD_FEED_HOLD:
+        System_SetExecStateFlag(EXEC_FEED_HOLD);
+        break; // Set as true
+    case CMD_STEPPER_DISABLE:
+        Stepper_Disable(1);
+        break; // Set as true
 
     default:
         if(c > 0x7F) { // Real-time control characters are extended ASCII only.
             switch(c)
             {
-            case CMD_SAFETY_DOOR: System_SetExecStateFlag(EXEC_SAFETY_DOOR); break; // Set as true
+            case CMD_SAFETY_DOOR:
+                System_SetExecStateFlag(EXEC_SAFETY_DOOR);
+                break; // Set as true
             case CMD_JOG_CANCEL:
                 if(sys.state & STATE_JOG) { // Block all other states from invoking motion cancel.
                     System_SetExecStateFlag(EXEC_MOTION_CANCEL);
@@ -131,9 +145,9 @@ ProcessReceive(unsigned char c) {
             }
             // Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
         }
-        else {
+        else {// c < 0x7F
             // Write character to buffer
-            FifoUsart_Insert(USART_DIR_RX, (char)c);
+            FifoUsart_Insert(USART_DIR_RX, c);
         }
     }
 }
