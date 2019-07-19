@@ -825,6 +825,6 @@ Report_RealtimeStatus(void) {
 	}
 #endif
 
-	Putc('>');
+    Putc('>');
 	Report_LineFeed();
 }
