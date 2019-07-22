@@ -8,9 +8,10 @@
 #include "fifo_usart.h"
 #include "Settings.h"
 #include "Platform.h"
+#include "System32.h"
 
 
-#define MAX_BUFFER_SIZE     128
+#define MAX_BUFFER_SIZE     256
 
 
 static char buf[512] = {0};
@@ -61,11 +62,12 @@ Putc(const char c) {
 
 void
 Print_Flush(void) {
+    __HAL_UART_DISABLE_IT(&huart2, UART_IT_RXNE);
     Usart_Write(&huart2, false, (uint8_t*)buf, (uint8_t)buf_idx);
     memset(buf, 0, sizeof(buf));
     buf_idx = 0;
-    // Enable the Receive interrupt
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+    Delay_ms(50);
 }
 
 

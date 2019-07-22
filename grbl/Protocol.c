@@ -126,7 +126,6 @@ Protocol_MainLoop(void) {
 				}
 				else if(line[0] == '$') {
 					// Grbl '$' system command
-                    Report_StartupLine(254, line);
 					Report_StatusMessage(System_ExecuteLine(line));
 				}
 				else if(sys.state & (STATE_ALARM | STATE_JOG | STATE_TOOL_CHANGE)) {
@@ -136,7 +135,6 @@ Protocol_MainLoop(void) {
 				else {
                     //-----------------------------------------
 					// Parse and execute g-code block.
-                    Report_StartupLine(255, line);
                     Report_StatusMessage(GC_ExecuteLine(line));
                     //-----------------------------------------
 				}

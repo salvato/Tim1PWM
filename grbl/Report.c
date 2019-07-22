@@ -121,16 +121,14 @@ Report_StatusMessage(uint8_t status_code) {
 	switch(status_code)
 	{
 	case STATUS_OK: // STATUS_OK
-		Printf("ok\r\n");
-		Print_Flush();
-		break;
+        Printf("ok");
+        Report_LineFeed();
+        break;
 
 	default:
-		Printf("error:");
-		Printf("%d\r\n", status_code);
-		//Report_LineFeed();
-		Print_Flush();
-	}
+        Printf("error: %d", status_code);
+        Report_LineFeed();
+    }
 }
 
 
@@ -140,8 +138,6 @@ Report_AlarmMessage(uint8_t alarm_code) {
 	Printf("ALARM:");
 	Printf("%d", alarm_code);
 	Report_LineFeed();
-
-	Delay_ms(200); // Force delay to ensure message clears serial write buffer.
 }
 
 
