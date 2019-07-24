@@ -60,10 +60,7 @@ Usart_Write(UART_HandleTypeDef *usart, bool buffered, unsigned char *data, uint8
         Usart_TxInt(usart, true);
     }
     else {
-        while(len--) {
-            while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET);
-            HAL_UART_Transmit(usart, &data[i++], 1, 0);
-        }
+        HAL_UART_Transmit(usart, data, len, 100);
         while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET);
     }
 }

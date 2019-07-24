@@ -1,30 +1,7 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file    stm32f4xx_it.c
-  * @brief   Interrupt Service Routines.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "main.h"
 #include "usart.h"
 #include "fifo_usart.h"
@@ -36,50 +13,17 @@
 #include "MotionControl.h"
 #include "Platform.h"
 #include "Report.h"
-/* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN TD */
-
-/* USER CODE END TD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
 volatile uint8_t DebounceCounterControl = 0;
 volatile uint8_t DebounceCounterLimits = 0;
 volatile uint32_t gMillis = 0;// Counter for milliseconds
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN PFP */
 
 extern void Limit_PinChangeISR(void);
 extern void System_PinChangeISR(void);
 
-
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/* External variables --------------------------------------------------------*/
-/* USER CODE BEGIN EV */
 extern TIM_HandleTypeDef htim9;
 extern UART_HandleTypeDef huart2;
-/* USER CODE END EV */
+
 
 uint32_t
 millis(void) {
@@ -124,23 +68,55 @@ ProcessReceive(unsigned char c) {
                 }
                 break;
 
-            case CMD_FEED_OVR_RESET: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_RESET); break;
-            case CMD_FEED_OVR_COARSE_PLUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_PLUS); break;
-            case CMD_FEED_OVR_COARSE_MINUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_MINUS); break;
-            case CMD_FEED_OVR_FINE_PLUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_PLUS); break;
-            case CMD_FEED_OVR_FINE_MINUS: System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_MINUS); break;
-            case CMD_RAPID_OVR_RESET: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_RESET); break;
-            case CMD_RAPID_OVR_MEDIUM: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_MEDIUM); break;
-            case CMD_RAPID_OVR_LOW: System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_LOW); break;
-            case CMD_SPINDLE_OVR_RESET: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_RESET); break;
-            case CMD_SPINDLE_OVR_COARSE_PLUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_PLUS); break;
-            case CMD_SPINDLE_OVR_COARSE_MINUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_MINUS); break;
-            case CMD_SPINDLE_OVR_FINE_PLUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_PLUS); break;
-            case CMD_SPINDLE_OVR_FINE_MINUS: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_MINUS); break;
-            case CMD_SPINDLE_OVR_STOP: System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_STOP); break;
-            case CMD_COOLANT_FLOOD_OVR_TOGGLE: System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_FLOOD_OVR_TOGGLE); break;
+            case CMD_FEED_OVR_RESET:
+                System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_RESET);
+                break;
+            case CMD_FEED_OVR_COARSE_PLUS:
+                System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_PLUS);
+                break;
+            case CMD_FEED_OVR_COARSE_MINUS:
+                System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_COARSE_MINUS);
+                break;
+            case CMD_FEED_OVR_FINE_PLUS:
+                System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_PLUS);
+                break;
+            case CMD_FEED_OVR_FINE_MINUS:
+                System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_FINE_MINUS);
+                break;
+            case CMD_RAPID_OVR_RESET:
+                System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_RESET);
+                break;
+            case CMD_RAPID_OVR_MEDIUM:
+                System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_MEDIUM);
+                break;
+            case CMD_RAPID_OVR_LOW:
+                System_SetExecMotionOverrideFlag(EXEC_RAPID_OVR_LOW);
+                break;
+            case CMD_SPINDLE_OVR_RESET:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_RESET);
+                break;
+            case CMD_SPINDLE_OVR_COARSE_PLUS:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_PLUS);
+                break;
+            case CMD_SPINDLE_OVR_COARSE_MINUS:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_COARSE_MINUS);
+                break;
+            case CMD_SPINDLE_OVR_FINE_PLUS:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_PLUS);
+                break;
+            case CMD_SPINDLE_OVR_FINE_MINUS:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_FINE_MINUS);
+                break;
+            case CMD_SPINDLE_OVR_STOP:
+                System_SetExecAccessoryOverrideFlag(EXEC_SPINDLE_OVR_STOP);
+                break;
+            case CMD_COOLANT_FLOOD_OVR_TOGGLE:
+                System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_FLOOD_OVR_TOGGLE);
+                break;
 #ifdef ENABLE_M7
-            case CMD_COOLANT_MIST_OVR_TOGGLE: System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_MIST_OVR_TOGGLE); break;
+            case CMD_COOLANT_MIST_OVR_TOGGLE:
+                System_SetExecAccessoryOverrideFlag(EXEC_COOLANT_MIST_OVR_TOGGLE);
+                break;
 #endif
             }
             // Throw away any unfound extended-ASCII character by not passing it to the serial buffer.
@@ -149,7 +125,7 @@ ProcessReceive(unsigned char c) {
             // Write character to buffer
             FifoUsart_Insert(USART_DIR_RX, c);
         }
-    }
+    }// default:
 }
 
 
@@ -161,12 +137,6 @@ ProcessReceive(unsigned char c) {
   */
 void
 NMI_Handler(void) {
-    /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-
-    /* USER CODE END NonMaskableInt_IRQn 0 */
-    /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-
-    /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
 
@@ -175,12 +145,7 @@ NMI_Handler(void) {
   */
 void __attribute__ ((noreturn))
 HardFault_Handler(void) {
-    /* USER CODE BEGIN HardFault_IRQn 0 */
-
-    /* USER CODE END HardFault_IRQn 0 */
     while (1) {
-        /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-        /* USER CODE END W1_HardFault_IRQn 0 */
     }
 }
 
@@ -190,12 +155,7 @@ HardFault_Handler(void) {
   */
 void __attribute__ ((noreturn))
 MemManage_Handler(void) {
-    /* USER CODE BEGIN MemoryManagement_IRQn 0 */
-
-    /* USER CODE END MemoryManagement_IRQn 0 */
     while (1) {
-        /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-        /* USER CODE END W1_MemoryManagement_IRQn 0 */
     }
 }
 
@@ -205,12 +165,7 @@ MemManage_Handler(void) {
   */
 void __attribute__ ((noreturn))
 BusFault_Handler(void) {
-    /* USER CODE BEGIN BusFault_IRQn 0 */
-
-    /* USER CODE END BusFault_IRQn 0 */
     while (1) {
-        /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-        /* USER CODE END W1_BusFault_IRQn 0 */
     }
 }
 
@@ -220,12 +175,7 @@ BusFault_Handler(void) {
   */
 void __attribute__ ((noreturn))
 UsageFault_Handler(void) {
-    /* USER CODE BEGIN UsageFault_IRQn 0 */
-
-    /* USER CODE END UsageFault_IRQn 0 */
     while (1) {
-        /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-        /* USER CODE END W1_UsageFault_IRQn 0 */
     }
 }
 
@@ -235,12 +185,6 @@ UsageFault_Handler(void) {
   */
 void
 SVC_Handler(void) {
-    /* USER CODE BEGIN SVCall_IRQn 0 */
-
-    /* USER CODE END SVCall_IRQn 0 */
-    /* USER CODE BEGIN SVCall_IRQn 1 */
-
-    /* USER CODE END SVCall_IRQn 1 */
 }
 
 
@@ -249,12 +193,6 @@ SVC_Handler(void) {
   */
 void
 DebugMon_Handler(void) {
-    /* USER CODE BEGIN DebugMonitor_IRQn 0 */
-
-    /* USER CODE END DebugMonitor_IRQn 0 */
-    /* USER CODE BEGIN DebugMonitor_IRQn 1 */
-
-    /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
 
@@ -263,12 +201,6 @@ DebugMon_Handler(void) {
   */
 void
 PendSV_Handler(void) {
-    /* USER CODE BEGIN PendSV_IRQn 0 */
-
-    /* USER CODE END PendSV_IRQn 0 */
-    /* USER CODE BEGIN PendSV_IRQn 1 */
-
-    /* USER CODE END PendSV_IRQn 1 */
 }
 
 
@@ -277,15 +209,11 @@ PendSV_Handler(void) {
   */
 void
 SysTick_Handler(void) {
-    /* USER CODE BEGIN SysTick_IRQn 0 */
-    /* USER CODE END SysTick_IRQn 0 */
     HAL_IncTick();
-    /* USER CODE BEGIN SysTick_IRQn 1 */
-    /*
-     * Because of the board layout, we cant attach all pins to interrupts.
-     * Therefore we just poll them in this 1ms task, which is hopefully fast
-     * enough for critical events. Debouncing pins is also implemented here.
-     */
+
+    // Because of the board layout, we cant attach all pins to interrupts.
+    // Therefore we just poll them in this 1ms task, which is hopefully fast
+    // enough for critical events. Debouncing pins is also implemented here.
     uint8_t limits = Limits_GetState();
     if(limits) {
         // X-Y-Z Limit
@@ -309,7 +237,6 @@ SysTick_Handler(void) {
         DebounceCounterControl--;
     }
     gMillis++;
-    /* USER CODE END SysTick_IRQn 1 */
 }
 
 
@@ -351,28 +278,9 @@ USART2_IRQHandler(void) {
         ProcessReceive(c);
     }
 
-    if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_TXE) != RESET) {
-        char c;
-        if(FifoUsart_Get(USART_DIR_TX, &c) == 0) {
-            // Write one byte to the transmit data register
-            while(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET);
-            HAL_UART_Transmit(&huart2, (uint8_t*)&c, 1, 0);
-        }
-        else {
-            // Nothing to transmit - disable interrupt
-            __HAL_UART_DISABLE_IT(&huart2, UART_IT_TXE);
-        }
-    }
-
     // If overrun condition occurs, clear the ORE flag and recover communication
     if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE) != RESET) {
         unsigned char c;
         HAL_UART_Receive(&huart2, &c, 1, 0);
     }
 }
-
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

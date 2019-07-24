@@ -204,7 +204,6 @@ Report_FeedbackMessage(uint8_t message_code) {
 // Welcome message
 void
 Report_InitMessage(void) {
-	//Printf("\r\nGRBL-Advanced %s ['$' for help]\r\n", GRBL_VERSION);
 	Printf("\r\nGrbl 1.1f ['$' for help]\r\n");
 	Print_Flush();
 }
