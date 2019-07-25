@@ -62,9 +62,9 @@ Putc(const char c) {
 
 void
 Print_Flush(void) {
-    Delay_ms(30);
+    Delay_ms(15);
     __HAL_UART_DISABLE_IT(&huart2, UART_IT_RXNE);
-    Usart_Write(&huart2, false, (uint8_t*)buf, (uint8_t)buf_idx);
+    Usart_Write(&huart2, (uint8_t*)buf, (uint8_t)buf_idx);
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
     memset(buf, 0, sizeof(buf));
     buf_idx = 0;

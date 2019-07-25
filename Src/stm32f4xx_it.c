@@ -67,7 +67,6 @@ ProcessReceive(unsigned char c) {
                     System_SetExecStateFlag(EXEC_MOTION_CANCEL);
                 }
                 break;
-
             case CMD_FEED_OVR_RESET:
                 System_SetExecMotionOverrideFlag(EXEC_FEED_OVR_RESET);
                 break;
@@ -271,16 +270,15 @@ TIM1_BRK_TIM9_IRQHandler(void) {
   */
 void
 USART2_IRQHandler(void) {
+    unsigned char c;
     if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE) != RESET) {
         // The receive data register is not empty: Read one byte from it
-        unsigned char c;
         HAL_UART_Receive(&huart2, &c, 1, 0);
         ProcessReceive(c);
     }
 
     // If overrun condition occurs, clear the ORE flag and recover communication
     if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE) != RESET) {
-        unsigned char c;
         HAL_UART_Receive(&huart2, &c, 1, 0);
     }
 }

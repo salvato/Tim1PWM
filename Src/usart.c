@@ -49,20 +49,8 @@ Usart_Put(UART_HandleTypeDef *usart, bool buffered, unsigned char c) {
 
 
 void
-Usart_Write(UART_HandleTypeDef *usart, bool buffered, unsigned char *data, uint8_t len) {
-	uint8_t i = 0;
-
-    if(buffered) {
-        while(len--) {
-            FifoUsart_Insert(USART_DIR_TX, data[i++]);
-        }
-        // Enable sending via interrupt
-        Usart_TxInt(usart, true);
-    }
-    else {
-        HAL_UART_Transmit(usart, data, len, 100);
-        while(__HAL_UART_GET_FLAG(usart, UART_FLAG_TC) == RESET);
-    }
+Usart_Write(UART_HandleTypeDef *usart, unsigned char *data, uint8_t len) {
+    HAL_UART_Transmit(usart, data, len, 100);
 }
 
 
